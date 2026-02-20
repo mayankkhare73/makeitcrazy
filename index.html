@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crazy Puzzle - Make Someone Feel Special</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-1: #ffe9f6;
+        --bg-2: #eaf4ff;
+        --bg-3: #f4efff;
+        --glass: rgba(255, 255, 255, 0.62);
+        --glass-border: rgba(255, 255, 255, 0.88);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: radial-gradient(circle at 15% 20%, #ffd4ef 0%, transparent 33%),
+          radial-gradient(circle at 80% 10%, #d6e7ff 0%, transparent 38%),
+          linear-gradient(130deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
+        color: #40245b;
+        overflow-x: hidden;
+      }
+
+      #root {
+        position: relative;
+        z-index: 2;
+      }
+
+      .floating-hearts {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .heart {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        transform: rotate(45deg);
+        background: rgba(255, 160, 207, 0.5);
+        animation: rise linear infinite;
+      }
+
+      .heart::before,
+      .heart::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: inherit;
+      }
+
+      .heart::before {
+        left: -8px;
+      }
+
+      .heart::after {
+        top: -8px;
+      }
+
+      @keyframes rise {
+        0% {
+          transform: translateY(20px) rotate(45deg) scale(0.6);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-115vh) rotate(45deg) scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      .glass {
+        backdrop-filter: blur(10px);
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+      }
+
+      .svg-badge {
+        animation: drift 2.8s ease-in-out infinite;
+      }
+
+      .svg-badge:nth-child(2) {
+        animation-delay: 0.25s;
+      }
+
+      .svg-badge:nth-child(3) {
+        animation-delay: 0.5s;
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      .spark {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 5;
+        animation: sparkle 700ms ease-out forwards;
+      }
+
+      @keyframes sparkle {
+        to {
+          transform: translate(var(--tx), var(--ty)) scale(0);
+          opacity: 0;
+        }
+      }
+
+      .floral-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+        padding: 14px;
+        background: linear-gradient(135deg, #ffd8ec, #e8e3ff 45%, #dff3ff);
+        border: 1px solid rgba(255, 255, 255, 0.95);
+      }
+
+      .floral-card::before {
+        content: "";
+        position: absolute;
+        inset: -40% auto auto -35%;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent 70%);
+        transform: rotate(16deg);
+      }
+
+      .flower-strip {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .flower-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #fff, #ffc2e0 70%);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(255, 130, 190, 0.2);
+        animation: flowerBounce 1.8s ease-in-out infinite;
+      }
+
+      .flower-dot:nth-child(2) {
+        animation-delay: 0.15s;
+        background: radial-gradient(circle at 35% 35%, #fff, #d0c7ff 70%);
+      }
+
+      .flower-dot:nth-child(3) {
+        animation-delay: 0.3s;
+        background: radial-gradient(circle at 35% 35%, #fff, #bfe8ff 70%);
+      }
+
+      .flower-dot:nth-child(4) {
+        animation-delay: 0.45s;
+        background: radial-gradient(circle at 35% 35%, #fff, #ffe2bd 70%);
+      }
+
+      @keyframes flowerBounce {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-5px) scale(1.06);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="floating-hearts" id="floating-hearts"></div>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@emotion/react@11/dist/emotion-react.umd.min.js"></script>
+    <script src="https://unpkg.com/@emotion/styled@11/dist/emotion-styled.umd.min.js"></script>
+    <script src="https://unpkg.com/@mui/material@5/umd/material-ui.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script type="text/babel">
+      const {
+        ThemeProvider,
+        createTheme,
+        CssBaseline,
+        Container,
+        Box,
+        Typography,
+        Button,
+        Paper,
+        Chip,
+        LinearProgress,
+        Stack,
+        Dialog,
+        DialogTitle,
+        DialogContent,
+        DialogActions,
+        TextField,
+      } = MaterialUI;
+
+      const BOARD_SIZE = 3;
+      const FINAL_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+      const TILE_MESSAGES = {
+        1: "Shine",
+        2: "Bold",
+        3: "Magic",
+        4: "Glow",
+        5: "Unstoppable",
+        6: "Rare",
+        7: "Epic",
+        8: "Special",
+      };
+
+      const theme = createTheme({
+        palette: {
+          mode: "light",
+          primary: { main: "#ff88bc" },
+          secondary: { main: "#9f9bff" },
+          background: {
+            default: "transparent",
+            paper: "rgba(255, 255, 255, 0.72)",
+          },
+          text: {
+            primary: "#41205f",
+            secondary: "#644b7f",
+          },
+        },
+        shape: { borderRadius: 16 },
+        typography: { fontFamily: "Poppins, sans-serif" },
+      });
+
+      function shuffleSolvable(array) {
+        const arr = [...array];
+        let emptyIdx = arr.indexOf(0);
+        let prevEmptyIdx = -1;
+        const easySteps = 24;
+        for (let step = 0; step < easySteps; step++) {
+          const neighbors = getNeighbors(emptyIdx).filter((idx) => idx !== prevEmptyIdx);
+          const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
+          [arr[emptyIdx], arr[pick]] = [arr[pick], arr[emptyIdx]];
+          prevEmptyIdx = emptyIdx;
+          emptyIdx = pick;
+        }
+        return arr;
+      }
+
+      function isSolved(arr) {
+        return arr.every((value, idx) => value === FINAL_ORDER[idx]);
+      }
+
+      function getInversions(arr) {
+        const values = arr.filter((n) => n !== 0);
+        let inversions = 0;
+        for (let i = 0; i < values.length; i++) {
+          for (let j = i + 1; j < values.length; j++) {
+            if (values[i] > values[j]) inversions += 1;
+          }
+        }
+        return inversions;
+      }
+
+      function isSolvable(arr) {
+        const inversions = getInversions(arr);
+        const emptyIndex = arr.indexOf(0);
+        const emptyRowFromBottom = BOARD_SIZE - Math.floor(emptyIndex / BOARD_SIZE);
+        if (BOARD_SIZE % 2 === 1) return inversions % 2 === 0;
+        return (emptyRowFromBottom % 2 === 0) !== (inversions % 2 === 0);
+      }
+
+      function canMove(board, idx) {
+        const emptyIdx = board.indexOf(0);
+        const row = Math.floor(idx / BOARD_SIZE);
+        const col = idx % BOARD_SIZE;
+        const eRow = Math.floor(emptyIdx / BOARD_SIZE);
+        const eCol = emptyIdx % BOARD_SIZE;
+        return Math.abs(row - eRow) + Math.abs(col - eCol) === 1;
+      }
+
+      function getNeighbors(index) {
+        const row = Math.floor(index / BOARD_SIZE);
+        const col = index % BOARD_SIZE;
+        const neighbors = [];
+        if (row > 0) neighbors.push(index - BOARD_SIZE);
+        if (row < BOARD_SIZE - 1) neighbors.push(index + BOARD_SIZE);
+        if (col > 0) neighbors.push(index - 1);
+        if (col < BOARD_SIZE - 1) neighbors.push(index + 1);
+        return neighbors;
+      }
+
+      function createHearts() {
+        const container = document.getElementById("floating-hearts");
+        if (!container) return;
+        for (let i = 0; i < 28; i++) {
+          const heart = document.createElement("div");
+          heart.className = "heart";
+          heart.style.left = `${Math.random() * 100}%`;
+          heart.style.bottom = `${-10 - Math.random() * 80}px`;
+          heart.style.animationDuration = `${8 + Math.random() * 10}s`;
+          heart.style.animationDelay = `${Math.random() * 8}s`;
+          heart.style.opacity = (0.2 + Math.random() * 0.5).toFixed(2);
+          container.appendChild(heart);
+        }
+      }
+
+      function burstSparks(x, y, color = "#ff8fca") {
+        const total = 14;
+        for (let i = 0; i < total; i++) {
+          const el = document.createElement("div");
+          el.className = "spark";
+          el.style.left = `${x}px`;
+          el.style.top = `${y}px`;
+          el.style.background = i % 2 === 0 ? color : "#b68cff";
+          const angle = (Math.PI * 2 * i) / total;
+          const distance = 18 + Math.random() * 36;
+          el.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+          el.style.setProperty("--ty", `${Math.sin(angle) * distance}px`);
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 730);
+        }
+      }
+
+      function App() {
+        const [playerName, setPlayerName] = React.useState("");
+        const [showNameDialog, setShowNameDialog] = React.useState(true);
+        const [board, setBoard] = React.useState(() => shuffleSolvable(FINAL_ORDER));
+        const [moves, setMoves] = React.useState(0);
+        const [time, setTime] = React.useState(0);
+        const [started, setStarted] = React.useState(false);
+        const [victoryOpen, setVictoryOpen] = React.useState(false);
+        const [typedMessage, setTypedMessage] = React.useState("");
+        const solved = isSolved(board);
+
+        React.useEffect(() => {
+          createHearts();
+        }, []);
+
+        React.useEffect(() => {
+          if (!started || solved) return;
+          const timer = setInterval(() => setTime((t) => t + 1), 1000);
+          return () => clearInterval(timer);
+        }, [started, solved]);
+
+        React.useEffect(() => {
+          if (!solved) return;
+          setVictoryOpen(true);
+          if (window.confetti) {
+            const end = Date.now() + 2600;
+            const frame = () => {
+              window.confetti({
+                particleCount: 3,
+                spread: 70,
+                origin: { y: 0.65 },
+                colors: ["#ffa9cf", "#b8b1ff", "#ffdf9d", "#ffffff"],
+              });
+              if (Date.now() < end) requestAnimationFrame(frame);
+            };
+            frame();
+          }
+
+          const message = `Dear ${playerName || "Superstar"}, this world is brighter because you are in it. Keep going, keep shining, and keep believing in your own magic. You are strong, unique, and absolutely capable of amazing things.`;
+          setTypedMessage("");
+          let i = 0;
+          const typer = setInterval(() => {
+            i += 1;
+            setTypedMessage(message.slice(0, i));
+            if (i >= message.length) clearInterval(typer);
+          }, 28);
+          return () => clearInterval(typer);
+        }, [solved, playerName]);
+
+        const hintCount = board.filter((num, idx) => num !== 0 && num === FINAL_ORDER[idx]).length;
+        const progress = Math.floor((hintCount / (FINAL_ORDER.length - 1)) * 100);
+
+        const handleTileClick = (idx, event) => {
+          if (!canMove(board, idx) || solved) return;
+          if (!started) setStarted(true);
+          setBoard((prev) => {
+            const emptyIdx = prev.indexOf(0);
+            const next = [...prev];
+            [next[idx], next[emptyIdx]] = [next[emptyIdx], next[idx]];
+            return next;
+          });
+          setMoves((m) => m + 1);
+          const rect = event.currentTarget.getBoundingClientRect();
+          burstSparks(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        };
+
+        const restart = () => {
+          setBoard(shuffleSolvable(FINAL_ORDER));
+          setMoves(0);
+          setTime(0);
+          setStarted(false);
+          setVictoryOpen(false);
+          setTypedMessage("");
+        };
+
+        const formatTime = (seconds) => {
+          const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+          const s = (seconds % 60).toString().padStart(2, "0");
+          return `${m}:${s}`;
+        };
+
+        return (
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Container maxWidth="md" sx={{ py: 4 }}>
+              <Paper className="glass" elevation={8} sx={{ p: { xs: 2.2, md: 3.5 } }}>
+                <Stack spacing={2.2}>
+                  <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: 0.2 }}>
+                    Slide The Chaos, Unlock The Surprise
+                  </Typography>
+                  <Typography sx={{ opacity: 0.88 }}>
+                    Rearrange the tiles in order from 1 to 8. Each tile carries a reminder:
+                    you are amazing.
+                  </Typography>
+                  <Stack direction="row" spacing={1.2}>
+                    <Box className="svg-badge" component="svg" viewBox="0 0 80 80" sx={{ width: 44, height: 44 }}>
+                      <defs>
+                        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor="#ffb3d9" />
+                          <stop offset="100%" stopColor="#ffd8ec" />
+                        </linearGradient>
+                      </defs>
+                      <circle cx="40" cy="40" r="34" fill="url(#g1)" />
+                      <path d="M40 22l5.3 10.8L57 34.6l-8.5 8.3 2 11.7L40 49l-10.5 5.6 2-11.7-8.5-8.3 11.7-1.8z" fill="#fff" />
+                    </Box>
+                    <Box className="svg-badge" component="svg" viewBox="0 0 80 80" sx={{ width: 44, height: 44 }}>
+                      <defs>
+                        <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor="#bcdcff" />
+                          <stop offset="100%" stopColor="#e4f2ff" />
+                        </linearGradient>
+                      </defs>
+                      <circle cx="40" cy="40" r="34" fill="url(#g2)" />
+                      <circle cx="30" cy="34" r="5" fill="#fff" />
+                      <circle cx="50" cy="34" r="5" fill="#fff" />
+                      <path d="M26 49c4 5 10 8 14 8s10-3 14-8" stroke="#fff" strokeWidth="4" fill="none" strokeLinecap="round" />
+                    </Box>
+                    <Box className="svg-badge" component="svg" viewBox="0 0 80 80" sx={{ width: 44, height: 44 }}>
+                      <defs>
+                        <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor="#d5c4ff" />
+                          <stop offset="100%" stopColor="#efe7ff" />
+                        </linearGradient>
+                      </defs>
+                      <circle cx="40" cy="40" r="34" fill="url(#g3)" />
+                      <path d="M40 19l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill="#fff" />
+                    </Box>
+                  </Stack>
+
+                  <Paper
+                    className="glass"
+                    sx={{
+                      p: 2,
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${BOARD_SIZE}, minmax(0, 1fr))`,
+                      gap: 1.4,
+                      borderRadius: 3,
+                      background:
+                        "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.65), transparent 40%), rgba(255, 245, 254, 0.45)",
+                    }}
+                  >
+                    {board.map((tile, idx) => (
+                      <Button
+                        key={`${tile}-${idx}`}
+                        variant={tile === 0 ? "text" : "contained"}
+                        onClick={(event) => handleTileClick(idx, event)}
+                        disabled={tile === 0}
+                        sx={{
+                          minHeight: { xs: 72, sm: 102 },
+                          fontSize: { xs: "0.95rem", sm: "1.05rem" },
+                          fontWeight: 700,
+                          textTransform: "none",
+                          letterSpacing: 0.2,
+                          borderRadius: 3,
+                          color: "#fff",
+                          opacity: tile === 0 ? 0 : canMove(board, idx) ? 1 : 0.72,
+                          background:
+                            tile === 0
+                              ? "transparent"
+                              : `linear-gradient(135deg, hsl(${tile * 22 + 290} 88% 78%), hsl(${tile * 20 + 210} 90% 80%))`,
+                          boxShadow:
+                            tile === 0
+                              ? "none"
+                                : canMove(board, idx)
+                                ? "0 0 0 1px rgba(255,255,255,0.5), 0 0 24px rgba(255,160,207,0.55)"
+                                : "0 8px 20px rgba(0,0,0,0.28)",
+                          transform: tile === 0 ? "none" : `rotate(${tile % 2 === 0 ? "-1deg" : "1deg"})`,
+                          transition: "transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease",
+                          animation: canMove(board, idx) ? "tilePulse 1.5s ease-in-out infinite" : "none",
+                          "@keyframes tilePulse": {
+                            "0%, 100%": { filter: "brightness(1)" },
+                            "50%": { filter: "brightness(1.18)" },
+                          },
+                          "&:hover": {
+                            transform: tile === 0 ? "none" : "translateY(-3px) scale(1.05) rotate(0deg)",
+                            boxShadow: tile === 0 ? "none" : "0 0 30px rgba(159,155,255,0.56)",
+                          },
+                        }}
+                      >
+                        {tile === 0 ? "" : `${tile} • ${TILE_MESSAGES[tile]}`}
+                      </Button>
+                    ))}
+                  </Paper>
+
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ sm: "center" }}>
+                    <Chip label={`Moves: ${moves}`} color="primary" />
+                    <Chip label={`Time: ${formatTime(time)}`} color="secondary" />
+                    <Chip label={`Correct tiles: ${hintCount}/${FINAL_ORDER.length - 1}`} variant="outlined" />
+                  </Stack>
+
+                  <Box>
+                    <Typography variant="body2" sx={{ mb: 0.6, opacity: 0.86 }}>
+                      Magic meter
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={progress}
+                      sx={{
+                        height: 10,
+                        borderRadius: 8,
+                        backgroundColor: "rgba(255,255,255,0.14)",
+                        "& .MuiLinearProgress-bar": {
+                          borderRadius: 8,
+                          background: "linear-gradient(90deg, #ff6bb5, #b68cff)",
+                        },
+                      }}
+                    />
+                  </Box>
+
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                    <Button variant="contained" onClick={restart}>
+                      Shuffle Again
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setBoard(FINAL_ORDER);
+                        setStarted(true);
+                      }}
+                    >
+                      Quick Complete
+                    </Button>
+                  </Stack>
+                </Stack>
+              </Paper>
+            </Container>
+
+            <Dialog open={showNameDialog} maxWidth="xs" fullWidth>
+              <DialogTitle>Who is this special game for?</DialogTitle>
+              <DialogContent>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Add a name for a personalized final message.
+                </Typography>
+                <TextField
+                  fullWidth
+                  autoFocus
+                  label="Special person's name"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") setShowNameDialog(false);
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setShowNameDialog(false)}>Start Game</Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog open={victoryOpen} maxWidth="sm" fullWidth>
+              <DialogTitle>You Did It! ✨</DialogTitle>
+              <DialogContent>
+                <Box className="floral-card">
+                  <Box className="flower-strip">
+                    <Box className="flower-dot" />
+                    <Box className="flower-dot" />
+                    <Box className="flower-dot" />
+                    <Box className="flower-dot" />
+                    <Typography sx={{ ml: 0.5, fontSize: "1.05rem" }}>🌸 🌺 🌼</Typography>
+                  </Box>
+                  <Typography sx={{ mb: 1, fontWeight: 600, color: "#5a2d75" }}>
+                    {typedMessage || "..."}
+                  </Typography>
+                  <Typography sx={{ color: "#6d3a8f", fontWeight: 500 }}>
+                    Keep this smile with you today - you have a beautiful spark that inspires people around you.
+                  </Typography>
+                </Box>
+                <Typography variant="body2" sx={{ opacity: 0.82 }}>
+                  Final score: {moves} moves in {formatTime(time)}.
+                </Typography>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setVictoryOpen(false)}>Keep Smiling</Button>
+                <Button variant="contained" onClick={restart}>
+                  Play Again
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </ThemeProvider>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
