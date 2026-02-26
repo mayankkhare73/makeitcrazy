@@ -1,0 +1,2850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QA Interview Prep</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --card: #21253a;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --border: #2d3348;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #21253a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── SEARCH & FILTER ── */
+    .controls {
+      padding: 24px 40px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 10px 16px 10px 42px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-wrap input::placeholder { color: var(--muted); }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar-wrap {
+      padding: 0 40px 20px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      background: var(--border);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      height: 100%;
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      padding: 0 40px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(108,99,255,.15);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      padding: 18px 20px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .tag {
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: .5px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tag-manual    { background: #1e3a5f; color: #60a5fa; }
+    .tag-automation { background: #14532d; color: #4ade80; }
+    .tag-concepts  { background: #3b1f6e; color: #c084fc; }
+    .tag-api       { background: #7c2d12; color: #fb923c; }
+    .tag-agile     { background: #134e4a; color: #2dd4bf; }
+    .tag-tools     { background: #451a03; color: #fbbf24; }
+    .tag-behavioral { background: #4a1942; color: #f472b6; }
+    .tag-perf      { background: #1c1917; color: #a8a29e; border: 1px solid #44403c; }
+    .tag-security  { background: #3f1515; color: #f87171; }
+    .tag-mobile    { background: #172554; color: #93c5fd; }
+    .tag-db        { background: #14332a; color: #6ee7b7; }
+    .tag-scenario  { background: #2d1b69; color: #a78bfa; }
+    .tag-project   { background: #1c1f2e; color: #94a3b8; border: 1px solid #334155; }
+
+    .card-q {
+      flex: 1;
+      font-size: 0.93rem;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .35s ease;
+    }
+
+    .card.open .card-body {
+      max-height: 600px;
+    }
+
+    .card-answer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      font-size: 0.87rem;
+      line-height: 1.7;
+      padding: 16px 20px;
+      color: #cbd5e1;
+    }
+
+    .card-answer ul {
+      margin: 8px 0 8px 18px;
+    }
+
+    .card-answer li { margin-bottom: 4px; }
+
+    .card-answer code {
+      background: #0f1117;
+      border-radius: 4px;
+      color: var(--accent2);
+      font-family: 'Courier New', monospace;
+      font-size: 0.83rem;
+      padding: 1px 5px;
+    }
+
+    .real-example {
+      background: rgba(0,212,170,.07);
+      border-left: 3px solid var(--accent2);
+      border-radius: 0 8px 8px 0;
+      margin-top: 12px;
+      padding: 10px 14px;
+    }
+
+    .real-example-label {
+      color: var(--accent2);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .card-footer {
+      padding: 10px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .difficulty {
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .diff-easy   { background: rgba(34,197,94,.12); color: var(--green); }
+    .diff-medium { background: rgba(245,158,11,.12); color: var(--yellow); }
+    .diff-hard   { background: rgba(239,68,68,.12);  color: var(--red); }
+
+    .done-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 4px 12px;
+      transition: all .2s;
+    }
+
+    .done-btn:hover { border-color: var(--green); color: var(--green); }
+
+    .card.done {
+      opacity: 0.55;
+    }
+
+    .card.done .done-btn {
+      background: rgba(34,197,94,.12);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .toggle-icon {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-left: auto;
+      transition: transform .3s;
+    }
+
+    .card.open .toggle-icon { transform: rotate(180deg); }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      header { padding: 16px 20px; }
+      .controls, .progress-bar-wrap { padding-left: 20px; padding-right: 20px; }
+      .grid { padding: 0 20px 48px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      header {
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      header h1 { font-size: 1.15rem; }
+      header p  { font-size: 0.78rem; }
+      .stats {
+        width: 100%;
+        justify-content: space-around;
+        background: rgba(255,255,255,.03);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 0;
+      }
+      .stat-num  { font-size: 1.1rem; }
+      .stat-label { font-size: 0.65rem; }
+
+      .controls {
+        padding: 12px 16px 8px;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .search-wrap { min-width: unset; width: 100%; }
+
+      /* Filters: horizontal scroll on mobile */
+      .filters {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        gap: 6px;
+        scrollbar-width: none;
+      }
+      .filters::-webkit-scrollbar { display: none; }
+      .filter-btn { font-size: 0.75rem; padding: 5px 11px; flex-shrink: 0; }
+
+      .progress-bar-wrap { padding: 0 16px 14px; }
+      .progress-info { font-size: 0.75rem; }
+
+      .grid {
+        padding: 0 16px 40px;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .card-header { padding: 14px 14px 10px; gap: 10px; }
+      .card-q { font-size: 0.88rem; }
+      .tag { font-size: 0.62rem; padding: 2px 6px; }
+
+      .card-answer {
+        padding: 12px 14px;
+        font-size: 0.84rem;
+      }
+      .card-footer { padding: 8px 14px 12px; }
+
+      /* Tables inside answers scroll on mobile */
+      .card-answer table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .card.open .card-body { max-height: 1200px; }
+    }
+
+    /* Very small phones */
+    @media (max-width: 360px) {
+      header h1 { font-size: 1rem; }
+      .card-q { font-size: 0.84rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>QA Interview Prep</h1>
+    <p>Click a card to reveal the answer &nbsp;·&nbsp; Mark questions done to track progress</p>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="total-count">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="done-count">0</div>
+      <div class="stat-label">Done</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="visible-count">0</div>
+      <div class="stat-label">Showing</div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input type="text" id="search" placeholder="Search questions..." />
+  </div>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-tag="all">All</button>
+    <button class="filter-btn" data-tag="concepts">Concepts</button>
+    <button class="filter-btn" data-tag="manual">Manual</button>
+    <button class="filter-btn" data-tag="automation">Automation</button>
+    <button class="filter-btn" data-tag="api">API Testing</button>
+    <button class="filter-btn" data-tag="agile">Agile</button>
+    <button class="filter-btn" data-tag="tools">Tools</button>
+    <button class="filter-btn" data-tag="perf">Performance</button>
+    <button class="filter-btn" data-tag="security">Security</button>
+    <button class="filter-btn" data-tag="db">Database</button>
+    <button class="filter-btn" data-tag="mobile">Mobile</button>
+    <button class="filter-btn" data-tag="scenario">Scenarios</button>
+    <button class="filter-btn" data-tag="project">Project</button>
+    <button class="filter-btn" data-tag="behavioral">Behavioral</button>
+  </div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-info">
+    <span>Progress</span>
+    <span id="progress-text">0 / 0 completed</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const questions = [
+  // ── CONCEPTS ──
+  {
+    tag: "concepts", diff: "easy",
+    q: "What is Software Testing? Why is it important?",
+    a: `Software testing is the process of evaluating a software application to find defects and verify that it meets specified requirements.<br><br>
+    <strong>Importance:</strong>
+    <ul>
+      <li>Ensures software quality and reliability</li>
+      <li>Finds bugs early (cheaper to fix)</li>
+      <li>Protects business reputation and user trust</li>
+      <li>Ensures security and compliance</li>
+      <li>Validates business requirements are met</li>
+    </ul>`
+  },
+  {
+    tag: "concepts", diff: "easy",
+    q: "What is the difference between Verification and Validation?",
+    a: `<strong>Verification</strong> — "Are we building the product right?"<br>
+    Checks that the software meets specified requirements (static testing, reviews, inspections).<br><br>
+    <strong>Validation</strong> — "Are we building the right product?"<br>
+    Checks that the software meets user needs/expectations (dynamic testing, UAT).<br><br>
+    <em>Mnemonic:</em> Verification = process; Validation = end-user perspective.`
+  },
+  {
+    tag: "concepts", diff: "easy",
+    q: "What is SDLC vs STLC?",
+    a: `<strong>SDLC</strong> (Software Development Life Cycle) — phases for developing software: Requirement → Design → Development → Testing → Deployment → Maintenance.<br><br>
+    <strong>STLC</strong> (Software Testing Life Cycle) — phases specific to testing: Requirement Analysis → Test Planning → Test Case Design → Environment Setup → Test Execution → Test Closure.<br><br>
+    STLC runs within SDLC and focuses exclusively on quality assurance activities.`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "Explain the Bug / Defect Life Cycle.",
+    a: `<ul>
+      <li><strong>New</strong> — bug reported for the first time</li>
+      <li><strong>Assigned</strong> — assigned to a developer</li>
+      <li><strong>Open</strong> — developer starts analysis</li>
+      <li><strong>Fixed</strong> — developer fixes the issue</li>
+      <li><strong>Retest</strong> — QA retests the fix</li>
+      <li><strong>Verified</strong> — fix confirmed by QA</li>
+      <li><strong>Closed</strong> — issue resolved</li>
+      <li><strong>Reopened</strong> — bug reappears after fix</li>
+      <li><strong>Rejected / Duplicate / Deferred</strong> — special states</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example</div>
+      A tester on the <strong>Zomato app</strong> finds that clicking "Track Order" crashes the app (New). It's assigned to the Android dev (Assigned → Open). Dev fixes a null pointer exception (Fixed). QA retests on the same device/OS — crash gone (Retest → Verified → Closed). Next sprint, a similar crash reappears on Android 14 devices — bug is Reopened with a new build number and device details.
+    </div>`
+  },
+  {
+    tag: "concepts", diff: "easy",
+    q: "What are the types of Software Testing?",
+    a: `<strong>Functional:</strong>
+    <ul>
+      <li>Unit, Integration, System, UAT, Regression, Smoke, Sanity</li>
+    </ul>
+    <strong>Non-Functional:</strong>
+    <ul>
+      <li>Performance, Load, Stress, Security, Usability, Compatibility</li>
+    </ul>
+    <strong>Structural:</strong>
+    <ul>
+      <li>White-box / Grey-box testing</li>
+    </ul>
+    <strong>Change-related:</strong>
+    <ul>
+      <li>Regression, Re-testing, Confirmation testing</li>
+    </ul>`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is the difference between Smoke Testing and Sanity Testing?",
+    a: `<strong>Smoke Testing</strong><br>
+    — A broad, shallow test of major features to check if the build is stable enough for further testing.<br>
+    — Done on every new build. Also called "Build Verification Testing."<br><br>
+    <strong>Sanity Testing</strong><br>
+    — A narrow, deep test of specific functionality after a bug fix or minor change.<br>
+    — Done to verify that a particular feature works correctly without running the full regression suite.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example</div>
+      <strong>Smoke Test scenario (Swiggy):</strong> Dev team deploys Build v2.4.1. QA runs a 15-minute smoke test — can users search for a restaurant? Can they add items to cart? Can they see their past orders? If any of these fail, the build is rejected and sent back to dev without wasting time on full testing.<br><br>
+      <strong>Sanity Test scenario (Swiggy):</strong> Dev fixed a bug where applying a coupon code showed wrong discount. After the hotfix, QA runs a sanity test <em>only</em> on the coupon flow — tests 5 coupon types, verifies correct discount applied. No need to retest the entire app.
+    </div>`
+  },
+  {
+    tag: "concepts", diff: "easy",
+    q: "What is Regression Testing?",
+    a: `Regression testing verifies that new code changes haven't broken existing functionality.<br><br>
+    <strong>When to run:</strong> After bug fixes, new features, refactoring, or config changes.<br><br>
+    <strong>Types:</strong>
+    <ul>
+      <li><strong>Full regression</strong> — re-run all tests</li>
+      <li><strong>Partial / selective</strong> — run tests related to changed areas</li>
+      <li><strong>Progressive</strong> — tests for new features added</li>
+    </ul>
+    <strong>Best practice:</strong> Automate regression suites to speed up feedback.`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is the difference between Black-box, White-box, and Grey-box testing?",
+    a: `<strong>Black-box</strong> — Tester has no knowledge of internal code. Tests based on requirements/behavior only. (e.g., functional, UAT)<br><br>
+    <strong>White-box</strong> — Tester has full knowledge of code structure. Tests internal logic, paths, branches. (e.g., unit tests, code coverage)<br><br>
+    <strong>Grey-box</strong> — Tester has partial knowledge (e.g., DB schema, APIs). Combines both approaches. (e.g., integration testing)`
+  },
+  {
+    tag: "concepts", diff: "hard",
+    q: "What is Test Coverage? What are different coverage criteria?",
+    a: `Test coverage measures what percentage of the code/requirements are exercised by tests.<br><br>
+    <strong>Code coverage types:</strong>
+    <ul>
+      <li><strong>Statement coverage</strong> — every line executed</li>
+      <li><strong>Branch coverage</strong> — every branch (if/else) executed</li>
+      <li><strong>Path coverage</strong> — every possible path</li>
+      <li><strong>Condition coverage</strong> — every boolean sub-expression</li>
+      <li><strong>Function coverage</strong> — every function called</li>
+    </ul>
+    <strong>Requirement coverage</strong> — % of requirements with at least one test case.`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is Boundary Value Analysis and Equivalence Partitioning?",
+    a: `<strong>Equivalence Partitioning (EP)</strong><br>
+    Divide input data into valid and invalid partitions. Test one value from each partition.<br>
+    Example: Age field 1–100 → test 50 (valid), -1 (invalid), 150 (invalid).<br><br>
+    <strong>Boundary Value Analysis (BVA)</strong><br>
+    Test at the edges of each partition.<br>
+    Example: For 1–100 → test 0, 1, 2, 99, 100, 101.<br><br>
+    Both reduce the number of test cases while maximizing coverage.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Swiggy / Zomato Coupon</div>
+      A coupon is valid for orders between ₹200 and ₹500.<br>
+      <strong>EP:</strong> Test ₹350 (valid), ₹100 (too low), ₹600 (too high).<br>
+      <strong>BVA:</strong> Test ₹199, ₹200, ₹201 (lower boundary) and ₹499, ₹500, ₹501 (upper boundary).<br><br>
+      <strong>Real bug found via BVA:</strong> Coupon was applying at ₹200 but the backend check was <code>&gt; 200</code> instead of <code>&gt;= 200</code> — boundary test at exactly ₹200 caught this off-by-one error.
+    </div>`
+  },
+  {
+    tag: "concepts", diff: "hard",
+    q: "What is a Test Plan? What does it include?",
+    a: `A Test Plan is a document that defines the scope, approach, resources, and schedule for testing.<br><br>
+    <strong>Key sections:</strong>
+    <ul>
+      <li>Test objectives and scope (in/out of scope)</li>
+      <li>Test strategy and approach</li>
+      <li>Test environment and tools</li>
+      <li>Entry and exit criteria</li>
+      <li>Test deliverables</li>
+      <li>Risk and mitigation</li>
+      <li>Roles and responsibilities</li>
+      <li>Schedule and milestones</li>
+    </ul>`
+  },
+
+  // ── MANUAL ──
+  {
+    tag: "manual", diff: "easy",
+    q: "How do you write a good Test Case?",
+    a: `A good test case includes:<br>
+    <ul>
+      <li><strong>Test Case ID</strong> — unique identifier</li>
+      <li><strong>Title</strong> — clear, concise description</li>
+      <li><strong>Preconditions</strong> — required state before execution</li>
+      <li><strong>Test Steps</strong> — clear, numbered steps</li>
+      <li><strong>Expected Result</strong> — what should happen</li>
+      <li><strong>Actual Result</strong> — filled during execution</li>
+      <li><strong>Status</strong> — Pass/Fail</li>
+      <li><strong>Priority & Severity</strong></li>
+    </ul>
+    <strong>Tips:</strong> One action per step, no ambiguous language, testable expected results.`
+  },
+  {
+    tag: "manual", diff: "easy",
+    q: "What is the difference between Severity and Priority?",
+    a: `<strong>Severity</strong> — Impact of the bug on the application's functionality.<br>
+    Levels: Critical → High → Medium → Low<br>
+    (Set by the QA engineer)<br><br>
+    <strong>Priority</strong> — Order in which the bug should be fixed.<br>
+    Levels: P1 (Urgent) → P2 → P3 → P4<br>
+    (Set by the Product Manager / Business)<br><br>
+    <strong>Example:</strong> A typo on a homepage may be Low Severity but High Priority (brand visibility). A crash in a rarely-used feature could be High Severity but Low Priority.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Examples</div>
+      <strong>Low Severity, High Priority:</strong> The CEO's name is spelled wrong on the Flipkart homepage banner — doesn't break anything, but it must be fixed before the press release goes live.<br><br>
+      <strong>High Severity, Low Priority:</strong> The "Export to Excel" feature in an internal admin panel crashes — critical functionality is broken, but only 2 users use it and it can wait until next sprint.<br><br>
+      <strong>High Severity, High Priority:</strong> Users cannot complete checkout on Amazon during a sale — payment API returning 500 — fix immediately!
+    </div>`
+  },
+  {
+    tag: "manual", diff: "medium",
+    q: "How do you write a good bug report?",
+    a: `A good bug report includes:<br>
+    <ul>
+      <li><strong>Title</strong> — short, descriptive summary</li>
+      <li><strong>Environment</strong> — OS, browser, app version</li>
+      <li><strong>Preconditions</strong> — state before reproducing</li>
+      <li><strong>Steps to Reproduce</strong> — numbered, minimal steps</li>
+      <li><strong>Expected vs Actual Result</strong></li>
+      <li><strong>Severity / Priority</strong></li>
+      <li><strong>Attachments</strong> — screenshots, logs, videos</li>
+    </ul>
+    A good bug report is reproducible, minimal, and unambiguous.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Bug Report Example — Paytm UPI</div>
+      <strong>Title:</strong> UPI payment fails with "Transaction Pending" but amount is debited<br>
+      <strong>Environment:</strong> Android 13, Paytm v10.5.2, Airtel network, UPI via SBI<br>
+      <strong>Precondition:</strong> User is logged in, UPI PIN is set, sufficient balance<br>
+      <strong>Steps:</strong> 1. Open Paytm → 2. Tap "Pay" → 3. Enter ₹500, recipient @ybl → 4. Enter UPI PIN → 5. Tap Confirm<br>
+      <strong>Expected:</strong> Transaction success, money transferred<br>
+      <strong>Actual:</strong> App shows "Transaction Pending" for 5 minutes, amount debited but not received<br>
+      <strong>Severity:</strong> Critical &nbsp;|&nbsp; <strong>Priority:</strong> P1<br>
+      <strong>Attachments:</strong> Screen recording + bank SMS screenshot
+    </div>`
+  },
+  {
+    tag: "manual", diff: "medium",
+    q: "What is Exploratory Testing?",
+    a: `Exploratory testing is a simultaneous learning, test design, and execution approach where the tester explores the application without pre-written test cases.<br><br>
+    <strong>Characteristics:</strong>
+    <ul>
+      <li>Unscripted but structured (use charters/time-boxes)</li>
+      <li>Relies on tester skill, intuition, and creativity</li>
+      <li>Great for finding unexpected bugs</li>
+      <li>Complements scripted testing</li>
+    </ul>
+    <strong>Best for:</strong> New features, risk-based areas, UAT, usability checks.`
+  },
+  {
+    tag: "manual", diff: "hard",
+    q: "What are Entry and Exit criteria in testing?",
+    a: `<strong>Entry Criteria</strong> — conditions that must be met before testing begins:<br>
+    <ul>
+      <li>Requirements are finalized and signed off</li>
+      <li>Test environment is ready</li>
+      <li>Build is deployed and smoke tested</li>
+      <li>Test cases are reviewed and approved</li>
+    </ul>
+    <strong>Exit Criteria</strong> — conditions to be met before testing ends:<br>
+    <ul>
+      <li>All planned test cases executed</li>
+      <li>No critical/high bugs open</li>
+      <li>Test coverage meets defined threshold</li>
+      <li>Test summary report approved</li>
+    </ul>`
+  },
+  {
+    tag: "manual", diff: "medium",
+    q: "What is UAT (User Acceptance Testing)?",
+    a: `UAT is the final phase of testing where actual end-users or business stakeholders validate that the software meets their needs before release.<br><br>
+    <strong>Goals:</strong>
+    <ul>
+      <li>Verify the system meets business requirements</li>
+      <li>Build user confidence</li>
+      <li>Get formal sign-off for go-live</li>
+    </ul>
+    <strong>Types:</strong>
+    <ul>
+      <li><strong>Alpha testing</strong> — done in-house by internal users</li>
+      <li><strong>Beta testing</strong> — done by real users in production-like environment</li>
+    </ul>`
+  },
+
+  // ── AUTOMATION ──
+  {
+    tag: "automation", diff: "easy",
+    q: "When should you automate a test? When should you NOT?",
+    a: `<strong>Automate when:</strong>
+    <ul>
+      <li>Repeated execution (regression suites)</li>
+      <li>Stable, well-defined requirements</li>
+      <li>Large data sets (data-driven testing)</li>
+      <li>Performance / load scenarios</li>
+      <li>Cross-browser / cross-platform checks</li>
+    </ul>
+    <strong>Do NOT automate when:</strong>
+    <ul>
+      <li>UI changes frequently</li>
+      <li>Test is run once or rarely</li>
+      <li>Requires human judgement (UX, visual aesthetics)</li>
+      <li>Exploratory or ad-hoc testing</li>
+    </ul>`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "What is the Page Object Model (POM)?",
+    a: `POM is a design pattern that creates an abstraction layer for UI pages.<br><br>
+    <strong>Structure:</strong>
+    <ul>
+      <li>Each web page → a separate class</li>
+      <li>Class contains locators (elements) and methods (actions)</li>
+      <li>Tests call page methods, not raw Selenium code</li>
+    </ul>
+    <strong>Benefits:</strong>
+    <ul>
+      <li>Reduces code duplication</li>
+      <li>Easy to maintain (locator changes in one place)</li>
+      <li>Improves readability</li>
+    </ul>
+    <code>LoginPage.enterUsername("admin").enterPassword("pass").clickLogin()</code>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Amazon Login POM</div>
+      <code>// AmazonLoginPage.java</code><br>
+      <code>By emailField = By.id("ap_email");</code><br>
+      <code>By passwordField = By.id("ap_password");</code><br>
+      <code>By submitBtn = By.id("signInSubmit");</code><br><br>
+      <code>public void login(String email, String pass) {</code><br>
+      <code>&nbsp;&nbsp;driver.findElement(emailField).sendKeys(email);</code><br>
+      <code>&nbsp;&nbsp;driver.findElement(passwordField).sendKeys(pass);</code><br>
+      <code>&nbsp;&nbsp;driver.findElement(submitBtn).click();</code><br>
+      <code>}</code><br><br>
+      When Amazon changes the email field ID, you update it in <em>one place</em> instead of in every test file.
+    </div>`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "What is the difference between implicit wait, explicit wait, and fluent wait in Selenium?",
+    a: `<strong>Implicit Wait</strong> — Global wait applied to all element lookups. Waits up to N seconds before throwing NoSuchElement.<br>
+    <code>driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS)</code><br><br>
+    <strong>Explicit Wait</strong> — Waits for a specific condition on a specific element.<br>
+    <code>new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOf(el))</code><br><br>
+    <strong>Fluent Wait</strong> — Like explicit wait but with configurable polling interval and exceptions to ignore.<br><br>
+    <em>Best practice:</em> Prefer explicit waits; avoid Thread.sleep().`
+  },
+  {
+    tag: "automation", diff: "hard",
+    q: "What is the Test Automation Pyramid?",
+    a: `The pyramid shows the ideal distribution of tests:<br><br>
+    <strong>Top — UI / E2E Tests (Few)</strong> — Slow, brittle, expensive but test full flow.<br>
+    <strong>Middle — Integration / API Tests (Some)</strong> — Faster, more stable, test component interactions.<br>
+    <strong>Bottom — Unit Tests (Many)</strong> — Fast, cheap, test individual functions.<br><br>
+    <strong>Anti-pattern:</strong> "Ice cream cone" — heavy UI tests at top with no unit tests.<br><br>
+    Rule of thumb: <em>70% unit, 20% integration, 10% E2E.</em>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Spotify Engineering</div>
+      Spotify's testing approach follows the pyramid closely:<br><br>
+      <strong>Unit Tests (thousands):</strong> Each microservice (playlist service, recommendation engine, search) has unit tests that run in milliseconds. A developer gets feedback in under 1 minute.<br><br>
+      <strong>Integration/API Tests (hundreds):</strong> Test that Playlist Service correctly talks to User Service and Music Catalog API — run in the CI pipeline on every PR, takes ~5 minutes.<br><br>
+      <strong>E2E Tests (dozens):</strong> Critical user flows — "Search a song → Play it → Add to playlist" — run nightly on real devices and browsers. Takes 30+ minutes.<br><br>
+      <strong>Anti-pattern they avoided:</strong> If Spotify relied only on E2E tests, a failing test would take 30 minutes to detect, and it wouldn't tell you <em>which microservice</em> broke.
+    </div>`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "What is CI/CD and how does automation testing fit in?",
+    a: `<strong>CI (Continuous Integration)</strong> — Developers merge code frequently; automated builds and tests run on each commit.<br><br>
+    <strong>CD (Continuous Delivery/Deployment)</strong> — Automated delivery of tested code to staging/production.<br><br>
+    <strong>Automation's role:</strong>
+    <ul>
+      <li>Smoke tests run on every build</li>
+      <li>Regression suite in CI pipeline</li>
+      <li>Fast feedback loop (fail fast)</li>
+      <li>Gate quality before merging/deploying</li>
+    </ul>
+    <strong>Tools:</strong> Jenkins, GitHub Actions, GitLab CI, CircleCI`
+  },
+  {
+    tag: "automation", diff: "hard",
+    q: "How do you handle dynamic elements in Selenium?",
+    a: `Dynamic elements change IDs/attributes on each page load. Strategies:<br>
+    <ul>
+      <li><strong>Relative XPath</strong> — use contains(), starts-with(): <code>//input[contains(@id,'username')]</code></li>
+      <li><strong>CSS Selectors</strong> — partial attribute matching: <code>input[id*='user']</code></li>
+      <li><strong>Wait for element</strong> — use explicit waits instead of hardcoded sleeps</li>
+      <li><strong>Parent-child traversal</strong> — navigate from a stable parent element</li>
+      <li><strong>Text-based locators</strong> — <code>//button[text()='Submit']</code></li>
+    </ul>`
+  },
+
+  // ── API TESTING ──
+  {
+    tag: "api", diff: "easy",
+    q: "What is API Testing? What do you verify in an API test?",
+    a: `API testing verifies that APIs work correctly, reliably, and securely — independent of the UI.<br><br>
+    <strong>What to verify:</strong>
+    <ul>
+      <li><strong>Status codes</strong> — 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Server Error</li>
+      <li><strong>Response body</strong> — correct data, schema validation</li>
+      <li><strong>Response time</strong> — within acceptable threshold</li>
+      <li><strong>Headers</strong> — Content-Type, Authorization</li>
+      <li><strong>Error handling</strong> — invalid inputs return proper errors</li>
+      <li><strong>Authentication/Authorization</strong></li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Swiggy Register API in Postman</div>
+      <code>POST https://api.swiggy.com/v1/users/register</code><br>
+      <code>Body: { "name": "Raj", "email": "raj@gmail.com", "phone": "9876543210" }</code><br><br>
+      <strong>Verify:</strong><br>
+      ✅ Status: <code>201 Created</code><br>
+      ✅ Response: <code>{ "userId": "U123", "name": "Raj", "token": "eyJhb..." }</code><br>
+      ✅ Response time: under 800ms<br>
+      ✅ Header: <code>Content-Type: application/json</code><br>
+      ❌ Duplicate email → <code>409 Conflict</code> with <code>"message": "Email already registered"</code>
+    </div>`
+  },
+  {
+    tag: "api", diff: "medium",
+    q: "What is the difference between REST and SOAP?",
+    a: `<table style="font-size:.83rem;border-collapse:collapse;width:100%">
+      <tr style="background:#0f1117"><th style="padding:6px;text-align:left;border:1px solid #2d3348">REST</th><th style="padding:6px;text-align:left;border:1px solid #2d3348">SOAP</th></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">Architectural style</td><td style="padding:6px;border:1px solid #2d3348">Protocol</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">JSON / XML</td><td style="padding:6px;border:1px solid #2d3348">XML only</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">Lightweight, faster</td><td style="padding:6px;border:1px solid #2d3348">More verbose</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">Stateless</td><td style="padding:6px;border:1px solid #2d3348">Can be stateful</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">HTTP methods (GET/POST/PUT/DELETE)</td><td style="padding:6px;border:1px solid #2d3348">HTTP, SMTP, etc.</td></tr>
+    </table>`
+  },
+  {
+    tag: "api", diff: "medium",
+    q: "How do you test a POST API endpoint?",
+    a: `<strong>Test scenarios for POST /api/users:</strong>
+    <ul>
+      <li><strong>Happy path</strong> — valid payload → 201 Created, user returned</li>
+      <li><strong>Missing required fields</strong> → 400 Bad Request with error message</li>
+      <li><strong>Invalid data types</strong> — email without @, age as string → 422</li>
+      <li><strong>Duplicate entry</strong> → 409 Conflict</li>
+      <li><strong>Unauthorized</strong> — no/wrong token → 401</li>
+      <li><strong>Large payload</strong> — check server limits</li>
+      <li><strong>SQL injection in body</strong> — security check</li>
+      <li><strong>Response schema validation</strong> — all expected fields present</li>
+    </ul>`
+  },
+  {
+    tag: "api", diff: "hard",
+    q: "What is the difference between Authentication and Authorization in API testing?",
+    a: `<strong>Authentication</strong> — Verifying WHO you are.<br>
+    Tests: No token → 401, expired token → 401, invalid token → 401.<br><br>
+    <strong>Authorization</strong> — Verifying WHAT you can access.<br>
+    Tests: User A accessing User B's data → 403 Forbidden, regular user accessing admin endpoint → 403.<br><br>
+    <strong>Common mechanisms:</strong>
+    <ul>
+      <li>API Keys</li>
+      <li>Bearer tokens (JWT)</li>
+      <li>OAuth 2.0</li>
+      <li>Basic Auth (base64 encoded)</li>
+    </ul>`
+  },
+
+  // ── AGILE ──
+  {
+    tag: "agile", diff: "easy",
+    q: "How does QA fit in an Agile/Scrum team?",
+    a: `In Agile, QA is embedded in the team and works throughout the sprint — not just at the end.<br><br>
+    <strong>QA activities per sprint:</strong>
+    <ul>
+      <li>Participate in sprint planning and backlog grooming</li>
+      <li>Clarify acceptance criteria in user stories (3 amigos)</li>
+      <li>Write test cases during development</li>
+      <li>Test features as they are developed (shift-left)</li>
+      <li>Participate in sprint review and retrospective</li>
+      <li>Maintain and run regression suite</li>
+    </ul>`
+  },
+  {
+    tag: "agile", diff: "medium",
+    q: "What are Acceptance Criteria and how do you use them in testing?",
+    a: `Acceptance Criteria define the conditions that a user story must meet to be accepted by the Product Owner.<br><br>
+    <strong>Format (Given/When/Then):</strong><br>
+    <em>Given</em> a user is logged in,<br>
+    <em>When</em> they click "Add to Cart",<br>
+    <em>Then</em> the item appears in the cart with correct quantity and price.<br><br>
+    <strong>QA use:</strong>
+    <ul>
+      <li>Derive test cases directly from AC</li>
+      <li>Identify ambiguous or missing requirements early</li>
+      <li>Define pass/fail criteria for the story</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Ola Ride Booking</div>
+      <strong>User Story:</strong> As a customer, I want to book a cab so I can reach my destination.<br><br>
+      <strong>Acceptance Criteria:</strong><br>
+      ✅ Given I'm on the home screen, When I enter pickup and drop location, Then available cab types (Mini, Prime, Auto) are shown with fare estimates.<br>
+      ✅ Given I select "Mini", When I tap "Book", Then a driver is assigned within 60 seconds and I see driver name, rating, and ETA.<br>
+      ✅ Given no cabs are available, When I tap "Book", Then I see "No cabs available, try again" message — not an app crash.<br><br>
+      QA derives test cases directly from these ACs — each AC becomes at least one test case.
+    </div>`
+  },
+  {
+    tag: "agile", diff: "medium",
+    q: "What is Shift-Left Testing?",
+    a: `Shift-left testing means moving testing activities earlier in the SDLC — "shifting left" on the timeline.<br><br>
+    <strong>Practices:</strong>
+    <ul>
+      <li>QA reviews requirements before development starts</li>
+      <li>Test cases written during design, not after coding</li>
+      <li>Developers write unit tests alongside code</li>
+      <li>Continuous testing in CI pipeline</li>
+    </ul>
+    <strong>Benefits:</strong> Find bugs earlier (cheaper to fix), faster feedback, better quality.`
+  },
+  {
+    tag: "agile", diff: "hard",
+    q: "What is the Definition of Done (DoD) in Agile?",
+    a: `The Definition of Done is a shared checklist that a user story must meet to be considered complete.<br><br>
+    <strong>Typical DoD includes:</strong>
+    <ul>
+      <li>Code written and peer-reviewed</li>
+      <li>Unit tests written and passing</li>
+      <li>Feature tested against acceptance criteria</li>
+      <li>Regression tests passed</li>
+      <li>No critical bugs open</li>
+      <li>Documentation updated</li>
+      <li>Code merged to main branch</li>
+      <li>Deployed to staging / demo environment</li>
+    </ul>`
+  },
+
+  // ── TOOLS ──
+  {
+    tag: "tools", diff: "easy",
+    q: "What testing tools have you used? (Common QA toolkit)",
+    a: `<strong>Test Management:</strong> Jira, TestRail, Zephyr, Xray<br><br>
+    <strong>API Testing:</strong> Postman, RestAssured, SoapUI<br><br>
+    <strong>UI Automation:</strong> Selenium, Cypress, Playwright, Appium<br><br>
+    <strong>Performance:</strong> JMeter, Gatling, k6<br><br>
+    <strong>CI/CD:</strong> Jenkins, GitHub Actions, GitLab CI<br><br>
+    <strong>Version Control:</strong> Git, GitHub, GitLab<br><br>
+    <strong>Bug Tracking:</strong> Jira, Bugzilla, Azure DevOps`
+  },
+  {
+    tag: "tools", diff: "medium",
+    q: "What is the difference between Selenium and Cypress?",
+    a: `<table style="font-size:.83rem;border-collapse:collapse;width:100%">
+      <tr style="background:#0f1117"><th style="padding:6px;text-align:left;border:1px solid #2d3348">Selenium</th><th style="padding:6px;text-align:left;border:1px solid #2d3348">Cypress</th></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">Multiple languages (Java, Python, C#)</td><td style="padding:6px;border:1px solid #2d3348">JavaScript only</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">External browser driver</td><td style="padding:6px;border:1px solid #2d3348">Runs inside the browser</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">Cross-browser incl. IE/Safari</td><td style="padding:6px;border:1px solid #2d3348">Chrome, Firefox, Edge</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">More setup required</td><td style="padding:6px;border:1px solid #2d3348">Out-of-box dev experience</td></tr>
+      <tr><td style="padding:6px;border:1px solid #2d3348">Slower, more complex waits</td><td style="padding:6px;border:1px solid #2d3348">Auto-wait, faster feedback</td></tr>
+    </table>`
+  },
+  {
+    tag: "tools", diff: "medium",
+    q: "How do you use Postman for API testing?",
+    a: `<strong>Key Postman features:</strong>
+    <ul>
+      <li><strong>Collections</strong> — organize requests by feature/module</li>
+      <li><strong>Environments</strong> — switch between dev/staging/prod variables</li>
+      <li><strong>Pre-request Scripts</strong> — setup (e.g., get auth token)</li>
+      <li><strong>Tests tab</strong> — write assertions in JavaScript:<br>
+        <code>pm.test("Status 200", () => pm.response.to.have.status(200));</code>
+      </li>
+      <li><strong>Newman</strong> — run Postman collections in CI pipeline from CLI</li>
+      <li><strong>Data files</strong> — CSV/JSON for data-driven testing</li>
+    </ul>`
+  },
+
+  // ── PERFORMANCE ──
+  {
+    tag: "perf", diff: "medium",
+    q: "What is the difference between Load, Stress, and Spike testing?",
+    a: `<strong>Load Testing</strong> — Simulate expected user load to verify performance under normal conditions. Goal: confirm response times meet SLAs.<br><br>
+    <strong>Stress Testing</strong> — Gradually increase load beyond capacity to find the breaking point. Goal: find limits and failure modes.<br><br>
+    <strong>Spike Testing</strong> — Sudden, extreme surge in load. Goal: see how system handles rapid traffic spikes (e.g., flash sales).<br><br>
+    <strong>Soak/Endurance Testing</strong> — Sustained load over a long period. Goal: detect memory leaks, degradation over time.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Flipkart Big Billion Days</div>
+      <strong>Load Test:</strong> Simulate 5 lakh (500K) concurrent users browsing products — the expected traffic based on last year's data. Verify checkout completes in under 3 seconds.<br><br>
+      <strong>Stress Test:</strong> Gradually ramp up to 20 lakh users. At 12 lakh, the database starts timing out. The team discovers this <em>before</em> the sale and scales up DB replicas.<br><br>
+      <strong>Spike Test:</strong> At 12:00 AM (sale start), simulate all 5 lakh users hitting the site simultaneously. Does the system auto-scale fast enough? Does the queue handle order bursts?<br><br>
+      <strong>Soak Test:</strong> Run 3 lakh users continuously for 72 hours — detects a memory leak in the session service that caused slowdown after 48 hours.
+    </div>`
+  },
+  {
+    tag: "perf", diff: "hard",
+    q: "What metrics do you monitor during performance testing?",
+    a: `<strong>Response time metrics:</strong>
+    <ul>
+      <li>Average, median, 90th/95th/99th percentile response time</li>
+      <li>Throughput (requests per second)</li>
+      <li>Error rate (%)</li>
+    </ul>
+    <strong>Server metrics:</strong>
+    <ul>
+      <li>CPU utilization</li>
+      <li>Memory usage</li>
+      <li>Network I/O</li>
+      <li>Disk I/O</li>
+    </ul>
+    <strong>Application metrics:</strong>
+    <ul>
+      <li>DB query times</li>
+      <li>Thread pool exhaustion</li>
+      <li>GC (garbage collection) pauses</li>
+      <li>Connection pool saturation</li>
+    </ul>`
+  },
+
+  // ── BEHAVIORAL ──
+  {
+    tag: "behavioral", diff: "medium",
+    q: "Describe a time you found a critical bug late in the project. How did you handle it?",
+    a: `<strong>STAR framework:</strong><br><br>
+    <strong>Situation:</strong> Describe the project and its stage (e.g., 2 days before release).<br><br>
+    <strong>Task:</strong> You discovered a critical data corruption bug during final regression.<br><br>
+    <strong>Action:</strong>
+    <ul>
+      <li>Immediately documented and escalated to the team lead</li>
+      <li>Provided clear reproduction steps and impact analysis</li>
+      <li>Collaborated with devs on a quick fix vs. go/no-go decision</li>
+      <li>Verified the fix and performed targeted regression</li>
+    </ul>
+    <strong>Result:</strong> Bug fixed within 24 hours; release delayed by 1 day to ensure quality. No production incident.`
+  },
+  {
+    tag: "behavioral", diff: "medium",
+    q: "How do you prioritize your testing when time is limited?",
+    a: `<strong>Strategy:</strong>
+    <ul>
+      <li><strong>Risk-based testing</strong> — focus on high-risk, high-impact areas first</li>
+      <li><strong>Core user journeys</strong> — ensure critical paths work end-to-end</li>
+      <li><strong>Recent changes</strong> — test areas that changed most</li>
+      <li><strong>Business priority</strong> — align with PO on what matters most for release</li>
+      <li><strong>Skip low-risk, unchanged areas</strong> — defer to next cycle</li>
+    </ul>
+    <strong>Communication:</strong> Always document what was skipped and the associated risk, get stakeholder sign-off.`
+  },
+  {
+    tag: "behavioral", diff: "easy",
+    q: "How do you handle pushback when a developer disagrees that a bug is valid?",
+    a: `<strong>Approach:</strong>
+    <ul>
+      <li><strong>Stay objective</strong> — don't make it personal</li>
+      <li><strong>Show evidence</strong> — clear steps, screenshots, logs</li>
+      <li><strong>Reference the spec</strong> — point to requirements or acceptance criteria</li>
+      <li><strong>Understand their perspective</strong> — maybe it's by design; ask "was this intended?"</li>
+      <li><strong>Escalate respectfully</strong> — involve PM/BA if no agreement</li>
+      <li><strong>Document the outcome</strong> — even if "won't fix," record the decision</li>
+    </ul>
+    Keep the focus on the end-user experience, not winning an argument.`
+  },
+  {
+    tag: "behavioral", diff: "hard",
+    q: "How do you keep up with new trends in QA/Testing?",
+    a: `<strong>Learning resources:</strong>
+    <ul>
+      <li>Blogs: Ministry of Testing, Test Guild, Selenium blog</li>
+      <li>Communities: Reddit r/QualityAssurance, LinkedIn groups</li>
+      <li>Certifications: ISTQB, Selenium/Cypress courses</li>
+      <li>Conferences: SeleniumConf, EuroSTAR, STARWEST</li>
+      <li>YouTube/Udemy courses on new tools (Playwright, k6)</li>
+      <li>Practice on personal projects and open-source</li>
+    </ul>
+    <strong>Current trends to know:</strong> AI-assisted testing, shift-left, contract testing, chaos engineering, accessibility testing.`
+  },
+  {
+    tag: "behavioral", diff: "medium",
+    q: "What questions do you ask at the start of a new testing project?",
+    a: `<ul>
+      <li>What are the business and functional requirements?</li>
+      <li>What are the most critical user journeys?</li>
+      <li>What is the tech stack and architecture?</li>
+      <li>What is the testing environment setup?</li>
+      <li>What existing test coverage is there?</li>
+      <li>What are the timelines and release dates?</li>
+      <li>What are the known risks and high-priority areas?</li>
+      <li>Who are the SMEs for each area?</li>
+      <li>What is the bug tracking and communication process?</li>
+      <li>What does "done" mean for this project?</li>
+    </ul>`
+  },
+  {
+    tag: "behavioral", diff: "easy",
+    q: "Tell me about yourself as a QA engineer.",
+    a: `Use the <strong>Present → Past → Future</strong> structure:<br><br>
+    <strong>Present:</strong> "I'm currently a QA engineer with X years of experience, specializing in [manual/automation/API testing]. I work on [type of product] ensuring quality through [your key activities]."<br><br>
+    <strong>Past:</strong> "I've previously worked at [company types], where I [key accomplishments — e.g., built automation suite from scratch, reduced regression time by 40%]."<br><br>
+    <strong>Future:</strong> "I'm looking to grow in [automation, leadership, performance testing] and I'm excited about this role because [specific reason]."<br><br>
+    Keep it under 2 minutes. Practice until it sounds natural.`
+  },
+  {
+    tag: "behavioral", diff: "medium",
+    q: "What is your biggest weakness as a tester?",
+    a: `<strong>Golden rule:</strong> Choose a REAL weakness that is not a core QA skill, and show what you are doing about it.<br><br>
+    <strong>Good examples:</strong>
+    <ul>
+      <li>"I used to spend too much time perfecting test cases. I now timebox design and review with a colleague to balance depth vs speed."</li>
+      <li>"I was less confident with automation early in my career. I invested in Selenium/Cypress courses and now write automation daily."</li>
+      <li>"I sometimes find it hard to stop testing. I've learned to use exit criteria and risk-based checklists to know when 'enough' is enough."</li>
+    </ul>
+    Avoid: "I'm a perfectionist" (cliché) or admitting a critical skill gap.`
+  },
+  {
+    tag: "behavioral", diff: "hard",
+    q: "How do you ensure quality when deadlines are extremely tight?",
+    a: `<strong>Framework:</strong>
+    <ul>
+      <li><strong>Communicate early</strong> — raise timeline concerns the moment you see risk</li>
+      <li><strong>Risk-based approach</strong> — identify and test highest-risk areas first</li>
+      <li><strong>Negotiate scope</strong> — work with PM to defer lower-priority features</li>
+      <li><strong>Leverage automation</strong> — run regression suite to cover basics quickly</li>
+      <li><strong>Document skipped tests</strong> — make the risk visible, get stakeholder sign-off</li>
+      <li><strong>Post-release monitoring</strong> — agree on a hotfix plan if issues arise</li>
+    </ul>`
+  },
+
+  // ── CONCEPTS (additional) ──
+  {
+    tag: "concepts", diff: "easy",
+    q: "What are the 7 Principles of Software Testing (ISTQB)?",
+    a: `<ol style="margin:8px 0 8px 18px">
+      <li><strong>Testing shows presence of defects</strong> — can never prove zero bugs</li>
+      <li><strong>Exhaustive testing is impossible</strong> — use risk and priority to focus</li>
+      <li><strong>Early testing saves money</strong> — shift-left, find bugs earlier</li>
+      <li><strong>Defect clustering</strong> — 80% of bugs in 20% of modules (Pareto principle)</li>
+      <li><strong>Pesticide paradox</strong> — same tests become ineffective; update them regularly</li>
+      <li><strong>Testing is context-dependent</strong> — approach differs for safety-critical vs e-commerce</li>
+      <li><strong>Absence of errors fallacy</strong> — bug-free software can still fail to meet user needs</li>
+    </ol>`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is the difference between Test Strategy and Test Plan?",
+    a: `<strong>Test Strategy</strong> — High-level document defining the overall testing approach for an organization or program.<br>
+    — Created by QA Lead/Manager. Covers: testing levels, types, tools, standards, automation approach. Rarely changes.<br><br>
+    <strong>Test Plan</strong> — Project-specific document with detailed scope, schedule, and resources.<br>
+    — Created per project/release. Covers: in/out of scope, environment, timelines, roles, risks. Changes per project.<br><br>
+    <em>Analogy:</em> Strategy = company handbook; Plan = project roadmap.`
+  },
+  {
+    tag: "concepts", diff: "easy",
+    q: "What is Positive Testing vs Negative Testing?",
+    a: `<strong>Positive Testing</strong> — Verify the system works correctly with valid, expected inputs.<br>
+    Example: Login with correct credentials → user logs in successfully.<br><br>
+    <strong>Negative Testing</strong> — Verify the system handles invalid, unexpected inputs gracefully.<br>
+    Example: Login with wrong password → error message shown, no access granted.<br><br>
+    <strong>Why both matter:</strong> Positive tests ensure functionality works; negative tests ensure robustness and security. Most real-world bugs are found through negative testing.`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is Static Testing vs Dynamic Testing?",
+    a: `<strong>Static Testing</strong> — Testing without executing the code.<br>
+    Examples: Code reviews, walkthroughs, inspections, static analysis (SonarQube), requirement reviews.<br>
+    Goal: Find defects early before code runs.<br><br>
+    <strong>Dynamic Testing</strong> — Testing by executing the code with actual inputs.<br>
+    Examples: Unit tests, integration tests, UI tests, performance tests.<br>
+    Goal: Verify actual runtime behavior.<br><br>
+    Both are necessary — static testing can find issues dynamic testing misses (e.g., dead code, security vulnerabilities).`
+  },
+  {
+    tag: "concepts", diff: "hard",
+    q: "What is Risk-Based Testing?",
+    a: `Risk-based testing prioritizes test effort based on the likelihood and impact of potential failures.<br><br>
+    <strong>Steps:</strong>
+    <ul>
+      <li><strong>Identify risks</strong> — what could go wrong?</li>
+      <li><strong>Analyze risk</strong> — likelihood × impact = risk level</li>
+      <li><strong>Prioritize</strong> — test high-risk areas first and most thoroughly</li>
+      <li><strong>Monitor</strong> — adjust as risks change during the project</li>
+    </ul>
+    <strong>Benefit:</strong> When time is limited, ensures most critical functionality is tested first.<br>
+    <strong>Example:</strong> Payment module = high priority; About Us page = low priority.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Banking App Sprint</div>
+      Sprint has 2 QA engineers and only 3 days before release. New features: Fund Transfer, Profile Photo Update, Dark Mode toggle.<br><br>
+      <strong>Risk analysis:</strong><br>
+      🔴 <strong>Fund Transfer</strong> — High likelihood of bugs (new complex logic), High impact (money loss) → Test extensively: 40 test cases<br>
+      🟡 <strong>Profile Photo Update</strong> — Medium likelihood, Low impact → Test basic flow: 8 test cases<br>
+      🟢 <strong>Dark Mode toggle</strong> — Low likelihood (just CSS changes), Low impact → Smoke only: 3 test cases<br><br>
+      Without risk-based approach, all 3 features get equal time — the most dangerous feature (fund transfer) might be undertested.
+    </div>`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is the difference between Retesting and Regression Testing?",
+    a: `<strong>Retesting</strong><br>
+    — Re-executing a specific failed test after the bug is fixed.<br>
+    — Goal: Confirm the reported bug is resolved.<br>
+    — Only tests the specific fix, nothing else.<br><br>
+    <strong>Regression Testing</strong><br>
+    — Running the broader test suite after any change.<br>
+    — Goal: Ensure the fix or new feature did not break anything else.<br>
+    — Covers existing, previously passing functionality.<br><br>
+    <em>Key:</em> Retesting is targeted; regression is broad.`
+  },
+  {
+    tag: "concepts", diff: "hard",
+    q: "What is Decision Table Testing?",
+    a: `Decision Table Testing is used when combinations of conditions produce different outcomes.<br><br>
+    <strong>Structure:</strong> Rows = conditions; Columns = rules (combinations); Bottom rows = expected actions.<br><br>
+    <strong>Example — Login:</strong><br>
+    <table style="font-size:.8rem;border-collapse:collapse;width:100%">
+      <tr style="background:#0f1117"><th style="padding:4px 8px;border:1px solid #2d3348">Condition</th><th style="padding:4px 8px;border:1px solid #2d3348">Rule 1</th><th style="padding:4px 8px;border:1px solid #2d3348">Rule 2</th><th style="padding:4px 8px;border:1px solid #2d3348">Rule 3</th><th style="padding:4px 8px;border:1px solid #2d3348">Rule 4</th></tr>
+      <tr><td style="padding:4px 8px;border:1px solid #2d3348">Valid username?</td><td style="padding:4px 8px;border:1px solid #2d3348">Y</td><td style="padding:4px 8px;border:1px solid #2d3348">Y</td><td style="padding:4px 8px;border:1px solid #2d3348">N</td><td style="padding:4px 8px;border:1px solid #2d3348">N</td></tr>
+      <tr><td style="padding:4px 8px;border:1px solid #2d3348">Valid password?</td><td style="padding:4px 8px;border:1px solid #2d3348">Y</td><td style="padding:4px 8px;border:1px solid #2d3348">N</td><td style="padding:4px 8px;border:1px solid #2d3348">Y</td><td style="padding:4px 8px;border:1px solid #2d3348">N</td></tr>
+      <tr><td style="padding:4px 8px;border:1px solid #2d3348">Result</td><td style="padding:4px 8px;border:1px solid #2d3348">Login</td><td style="padding:4px 8px;border:1px solid #2d3348">Error</td><td style="padding:4px 8px;border:1px solid #2d3348">Error</td><td style="padding:4px 8px;border:1px solid #2d3348">Error</td></tr>
+    </table>`
+  },
+  {
+    tag: "concepts", diff: "hard",
+    q: "What is State Transition Testing?",
+    a: `State Transition Testing tests behavior as a system moves through states based on events/inputs.<br><br>
+    <strong>Used for:</strong> ATM, login lockout, order lifecycle, booking flow.<br><br>
+    <strong>Example — Account Lockout:</strong>
+    <ul>
+      <li>Active → 1st failed login → Warning state</li>
+      <li>Warning → 2nd fail → Locked state</li>
+      <li>Locked → Admin resets → Active state</li>
+      <li>Active → Correct password → Logged In</li>
+    </ul>
+    <strong>Test cases cover:</strong> Valid transitions, invalid transitions, boundary conditions between states.`
+  },
+  {
+    tag: "concepts", diff: "easy",
+    q: "What is End-to-End (E2E) Testing?",
+    a: `E2E testing validates a complete user workflow from start to finish across all system layers (UI, API, database, third-party services).<br><br>
+    <strong>Example E2E — E-commerce:</strong>
+    <ul>
+      <li>User registers → logs in</li>
+      <li>Searches for product → adds to cart</li>
+      <li>Enters shipping info → completes payment</li>
+      <li>Order confirmation shown → DB updated → email sent</li>
+    </ul>
+    <strong>Characteristics:</strong> Slow, expensive to maintain, but gives high confidence. Run selectively — not on every commit.`
+  },
+  {
+    tag: "concepts", diff: "medium",
+    q: "What is a Test Oracle?",
+    a: `A Test Oracle is a mechanism for determining whether the actual outcome matches the expected outcome.<br><br>
+    <strong>Types of oracles:</strong>
+    <ul>
+      <li><strong>Specification-based</strong> — expected result from requirements document</li>
+      <li><strong>Existing system</strong> — compare output with a previous version</li>
+      <li><strong>User/expert knowledge</strong> — tester knows what correct behavior looks like</li>
+      <li><strong>Statistical oracle</strong> — expected value within a statistical range</li>
+      <li><strong>Derived oracle</strong> — output derived from inputs using known formulas</li>
+    </ul>
+    <strong>Oracle problem:</strong> Sometimes there is no perfect oracle — the expected result is unclear or subjective.`
+  },
+
+  // ── MANUAL (additional) ──
+  {
+    tag: "manual", diff: "medium",
+    q: "What is a Requirements Traceability Matrix (RTM)?",
+    a: `An RTM maps requirements to test cases, ensuring every requirement is tested.<br><br>
+    <strong>Columns typically include:</strong>
+    <ul>
+      <li>Requirement ID and description</li>
+      <li>Test Case ID(s) covering the requirement</li>
+      <li>Test execution status</li>
+      <li>Defect IDs (if any)</li>
+    </ul>
+    <strong>Why it matters:</strong>
+    <ul>
+      <li>Ensures 100% requirement coverage</li>
+      <li>Identifies untested requirements</li>
+      <li>Helps in impact analysis when requirements change</li>
+      <li>Used as evidence in audits and compliance</li>
+    </ul>`
+  },
+  {
+    tag: "manual", diff: "easy",
+    q: "What is Ad-hoc Testing vs Monkey Testing?",
+    a: `<strong>Ad-hoc Testing</strong><br>
+    — Informal, unplanned testing without test cases or documentation.<br>
+    — Tester uses experience and intuition to find bugs.<br>
+    — Targeted: tester has knowledge of the system and tests specific areas.<br><br>
+    <strong>Monkey Testing</strong> (Gorilla Testing)<br>
+    — Random, completely unstructured testing — inputs are random.<br>
+    — No specific area targeted; goal is to crash or break the system.<br>
+    — Tester behaves like a "monkey" randomly clicking and typing.<br><br>
+    <em>Ad-hoc = smart random; Monkey = truly random.</em>`
+  },
+  {
+    tag: "manual", diff: "medium",
+    q: "What is Error Guessing technique?",
+    a: `Error Guessing is an experience-based technique where the tester uses intuition and past experience to predict where errors are likely to occur.<br><br>
+    <strong>Common areas to guess errors:</strong>
+    <ul>
+      <li>Empty inputs and null values</li>
+      <li>Special characters in text fields</li>
+      <li>Zero, negative, or extremely large numbers</li>
+      <li>Duplicate entries or submissions</li>
+      <li>Rapid repeated actions (double-click submit)</li>
+      <li>Switching tabs mid-transaction</li>
+      <li>Slow network or timeout scenarios</li>
+      <li>Concurrent users editing the same data</li>
+    </ul>`
+  },
+  {
+    tag: "manual", diff: "hard",
+    q: "What is Test Data Management?",
+    a: `Test Data Management is the process of creating, maintaining, and securing data used for testing.<br><br>
+    <strong>Challenges:</strong>
+    <ul>
+      <li>Production data cannot be used directly (PII and compliance)</li>
+      <li>Data must cover all test scenarios</li>
+      <li>Data must be refreshed between test runs</li>
+    </ul>
+    <strong>Approaches:</strong>
+    <ul>
+      <li><strong>Data masking</strong> — anonymize production data</li>
+      <li><strong>Synthetic data</strong> — generate realistic fake data</li>
+      <li><strong>Data subsetting</strong> — extract a representative sample</li>
+      <li><strong>On-demand provisioning</strong> — create data as tests need it</li>
+    </ul>`
+  },
+  {
+    tag: "manual", diff: "medium",
+    q: "What is Compatibility Testing?",
+    a: `Compatibility testing verifies the application works correctly across different environments and configurations.<br><br>
+    <strong>Types:</strong>
+    <ul>
+      <li><strong>Browser compatibility</strong> — Chrome, Firefox, Safari, Edge (different versions)</li>
+      <li><strong>OS compatibility</strong> — Windows, macOS, Linux</li>
+      <li><strong>Device compatibility</strong> — desktop, tablet, mobile</li>
+      <li><strong>Screen resolution</strong> — different viewport sizes</li>
+      <li><strong>Database compatibility</strong> — MySQL, PostgreSQL, Oracle</li>
+      <li><strong>Network</strong> — WiFi, 4G, slow connections</li>
+    </ul>
+    <strong>Tools:</strong> BrowserStack, Sauce Labs, LambdaTest`
+  },
+  {
+    tag: "manual", diff: "hard",
+    q: "How do you test when requirements are incomplete or unclear?",
+    a: `<strong>Strategies:</strong>
+    <ul>
+      <li><strong>Clarify early</strong> — schedule 3 amigos or requirement review sessions</li>
+      <li><strong>Reference similar features</strong> — look at existing behavior for patterns</li>
+      <li><strong>Industry standards</strong> — follow common UX/behavior norms</li>
+      <li><strong>Use prototypes/mockups</strong> — treat wireframes as informal requirements</li>
+      <li><strong>Risk-based approach</strong> — focus testing on most critical assumptions</li>
+      <li><strong>Exploratory sessions</strong> — discover behavior and document it</li>
+      <li><strong>Document assumptions</strong> — clearly state what you assumed; get sign-off</li>
+    </ul>
+    Proactively flag incomplete requirements as a risk — never silently proceed.`
+  },
+
+  // ── AUTOMATION (additional) ──
+  {
+    tag: "automation", diff: "medium",
+    q: "What is BDD (Behavior-Driven Development)? What is Gherkin?",
+    a: `<strong>BDD</strong> is an approach where tests are written in plain English based on user behavior, bridging business and technical teams.<br><br>
+    <strong>Gherkin</strong> is the language used in BDD:<br>
+    <code>Feature: User Login</code><br>
+    <code>Scenario: Successful login</code><br>
+    <code>&nbsp;&nbsp;Given the user is on the login page</code><br>
+    <code>&nbsp;&nbsp;When they enter valid credentials</code><br>
+    <code>&nbsp;&nbsp;Then they are redirected to the dashboard</code><br><br>
+    <strong>Tools:</strong> Cucumber (Java/JS), SpecFlow (.NET), Behave (Python)<br>
+    <strong>Benefit:</strong> Business stakeholders can read and write test scenarios.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Flipkart Add to Cart</div>
+      <code>Feature: Shopping Cart</code><br>
+      <code>Scenario: Add in-stock item to cart</code><br>
+      <code>&nbsp;&nbsp;Given the user is logged into Flipkart</code><br>
+      <code>&nbsp;&nbsp;And the item "iPhone 15" is in stock</code><br>
+      <code>&nbsp;&nbsp;When the user clicks "Add to Cart"</code><br>
+      <code>&nbsp;&nbsp;Then the cart icon shows count "1"</code><br>
+      <code>&nbsp;&nbsp;And the cart page shows "iPhone 15" with correct price</code><br><br>
+      <code>Scenario Outline: Apply discount coupon</code><br>
+      <code>&nbsp;&nbsp;When the user applies coupon "&lt;code&gt;"</code><br>
+      <code>&nbsp;&nbsp;Then the discount "&lt;amount&gt;" is applied</code><br>
+      <code>&nbsp;&nbsp;Examples: | code | amount | | SAVE100 | ₹100 | | FLAT200 | ₹200 |</code>
+    </div>`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "What is Data-Driven Testing?",
+    a: `Data-Driven Testing separates test logic from test data — the same test script runs multiple times with different data sets.<br><br>
+    <strong>Example:</strong> Test login with 10 different username/password combinations from a CSV file.<br><br>
+    <strong>Implementation:</strong>
+    <ul>
+      <li>TestNG: <code>@DataProvider</code></li>
+      <li>Cucumber: <code>Examples:</code> table in Scenario Outline</li>
+      <li>Postman: CSV/JSON data files with Newman</li>
+      <li>Playwright: parametrize in test config</li>
+    </ul>
+    <strong>Benefits:</strong> Better coverage, less code duplication, easy to add new test data.`
+  },
+  {
+    tag: "automation", diff: "hard",
+    q: "How do you handle iFrames in Selenium?",
+    a: `iFrames are embedded HTML documents. Selenium cannot interact with iFrame elements without switching context.<br><br>
+    <strong>Switch to iFrame:</strong><br>
+    <code>driver.switchTo().frame(0); // by index</code><br>
+    <code>driver.switchTo().frame("frameName"); // by name or id</code><br>
+    <code>driver.switchTo().frame(driver.findElement(By.id("frameId"))); // by element</code><br><br>
+    <strong>Switch back to main content:</strong><br>
+    <code>driver.switchTo().defaultContent();</code><br><br>
+    <strong>Nested iFrames:</strong> Switch to parent frame first, then to child frame.`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "What are Locator Strategies in Selenium? Which is best?",
+    a: `<strong>Locators (priority order):</strong>
+    <ul>
+      <li><strong>ID</strong> — fastest, most reliable: <code>By.id("username")</code></li>
+      <li><strong>Name</strong> — reliable: <code>By.name("email")</code></li>
+      <li><strong>CSS Selector</strong> — fast and flexible: <code>By.cssSelector("input.login-field")</code></li>
+      <li><strong>XPath</strong> — powerful but slower: <code>By.xpath("//input[@placeholder='Email']")</code></li>
+      <li><strong>Link Text / Partial Link Text</strong> — for anchor tags only</li>
+      <li><strong>Tag Name / Class Name</strong> — unreliable if not unique</li>
+    </ul>
+    <strong>Best practice:</strong> Prefer ID > CSS > XPath. Avoid absolute XPaths. Use <code>data-testid</code> attributes when collaborating with devs.`
+  },
+  {
+    tag: "automation", diff: "hard",
+    q: "What is the difference between TestNG and JUnit?",
+    a: `<table style="font-size:.82rem;border-collapse:collapse;width:100%">
+      <tr style="background:#0f1117"><th style="padding:5px 8px;border:1px solid #2d3348">Feature</th><th style="padding:5px 8px;border:1px solid #2d3348">TestNG</th><th style="padding:5px 8px;border:1px solid #2d3348">JUnit 5</th></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Grouping tests</td><td style="padding:5px 8px;border:1px solid #2d3348">Yes (groups)</td><td style="padding:5px 8px;border:1px solid #2d3348">Limited (tags)</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Parallel execution</td><td style="padding:5px 8px;border:1px solid #2d3348">Built-in</td><td style="padding:5px 8px;border:1px solid #2d3348">Requires plugins</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Data Provider</td><td style="padding:5px 8px;border:1px solid #2d3348">@DataProvider</td><td style="padding:5px 8px;border:1px solid #2d3348">@ParameterizedTest</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Dependency testing</td><td style="padding:5px 8px;border:1px solid #2d3348">Yes (dependsOnMethods)</td><td style="padding:5px 8px;border:1px solid #2d3348">No</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">XML config</td><td style="padding:5px 8px;border:1px solid #2d3348">testng.xml</td><td style="padding:5px 8px;border:1px solid #2d3348">N/A</td></tr>
+    </table><br>
+    <strong>Verdict:</strong> TestNG is more feature-rich for Selenium suites. JUnit 5 is preferred for unit testing.`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "How do you take a screenshot on test failure in Selenium?",
+    a: `<strong>Java/TestNG example:</strong><br>
+    <code>@AfterMethod<br>
+    public void onFailure(ITestResult result) {<br>
+    &nbsp;&nbsp;if (result.getStatus() == ITestResult.FAILURE) {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;TakesScreenshot ts = (TakesScreenshot) driver;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;File src = ts.getScreenshotAs(OutputType.FILE);<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;FileUtils.copyFile(src, new File("screenshots/" + result.getName() + ".png"));<br>
+    &nbsp;&nbsp;}<br>
+    }</code><br><br>
+    <strong>Cypress:</strong> Screenshots taken automatically on failure.<br>
+    <strong>Playwright:</strong> Set <code>screenshot: 'only-on-failure'</code> in playwright.config.ts<br>
+    Attach screenshots to Allure or ExtentReports for easy debugging.`
+  },
+  {
+    tag: "automation", diff: "hard",
+    q: "What is Parallel Test Execution and how do you implement it?",
+    a: `Parallel execution runs multiple tests simultaneously, reducing overall suite time.<br><br>
+    <strong>TestNG parallel config:</strong><br>
+    <code>&lt;suite parallel="methods" thread-count="4"&gt;</code><br><br>
+    <strong>Selenium Grid:</strong> Hub + nodes architecture — run tests on multiple browsers/machines simultaneously.<br><br>
+    <strong>Playwright:</strong> Parallel by default per file; configure workers in playwright.config.<br><br>
+    <strong>Key rules:</strong>
+    <ul>
+      <li>Each thread must have its own WebDriver instance</li>
+      <li>Use ThreadLocal to avoid driver sharing</li>
+      <li>Avoid shared mutable state between tests</li>
+      <li>Ensure test data is isolated per thread</li>
+    </ul>`
+  },
+  {
+    tag: "automation", diff: "medium",
+    q: "What is the difference between Playwright and Selenium?",
+    a: `<table style="font-size:.82rem;border-collapse:collapse;width:100%">
+      <tr style="background:#0f1117"><th style="padding:5px 8px;border:1px solid #2d3348">Feature</th><th style="padding:5px 8px;border:1px solid #2d3348">Playwright</th><th style="padding:5px 8px;border:1px solid #2d3348">Selenium</th></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Auto-wait</td><td style="padding:5px 8px;border:1px solid #2d3348">Yes (built-in)</td><td style="padding:5px 8px;border:1px solid #2d3348">Manual waits needed</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Browsers</td><td style="padding:5px 8px;border:1px solid #2d3348">Chromium, Firefox, WebKit</td><td style="padding:5px 8px;border:1px solid #2d3348">All including IE</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Speed</td><td style="padding:5px 8px;border:1px solid #2d3348">Faster</td><td style="padding:5px 8px;border:1px solid #2d3348">Slower</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">iFrame / Shadow DOM</td><td style="padding:5px 8px;border:1px solid #2d3348">Native support</td><td style="padding:5px 8px;border:1px solid #2d3348">Complex</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">Network interception</td><td style="padding:5px 8px;border:1px solid #2d3348">Built-in</td><td style="padding:5px 8px;border:1px solid #2d3348">Requires proxy</td></tr>
+    </table>`
+  },
+
+  // ── API (additional) ──
+  {
+    tag: "api", diff: "medium",
+    q: "What are common HTTP status codes every QA should know?",
+    a: `<strong>2xx — Success:</strong>
+    <ul>
+      <li><code>200 OK</code> — request succeeded</li>
+      <li><code>201 Created</code> — resource created (POST)</li>
+      <li><code>204 No Content</code> — success with no response body (DELETE)</li>
+    </ul>
+    <strong>4xx — Client Errors:</strong>
+    <ul>
+      <li><code>400 Bad Request</code> — invalid request syntax</li>
+      <li><code>401 Unauthorized</code> — not authenticated</li>
+      <li><code>403 Forbidden</code> — authenticated but not authorized</li>
+      <li><code>404 Not Found</code> — resource doesn't exist</li>
+      <li><code>409 Conflict</code> — duplicate or conflict</li>
+      <li><code>422 Unprocessable Entity</code> — validation error</li>
+    </ul>
+    <strong>5xx — Server Errors:</strong>
+    <ul>
+      <li><code>500 Internal Server Error</code> — server crashed</li>
+      <li><code>503 Service Unavailable</code> — server overloaded</li>
+    </ul>`
+  },
+  {
+    tag: "api", diff: "hard",
+    q: "What is Contract Testing? When would you use it?",
+    a: `Contract testing verifies that two services (consumer and provider) agree on the data format/schema they exchange — without deploying both.<br><br>
+    <strong>Tool:</strong> Pact (most popular)<br><br>
+    <strong>Flow:</strong>
+    <ul>
+      <li>Consumer defines expected request/response contract</li>
+      <li>Contract published to Pact Broker</li>
+      <li>Provider verifies it can satisfy the contract</li>
+    </ul>
+    <strong>When to use:</strong>
+    <ul>
+      <li>Microservices architecture</li>
+      <li>Teams deploy independently</li>
+      <li>Integration tests are slow or flaky</li>
+    </ul>
+    <strong>Benefit:</strong> Catch integration issues before deploying — no full test environment needed.`
+  },
+  {
+    tag: "api", diff: "medium",
+    q: "What is API Mocking and Stubbing? Why is it useful?",
+    a: `API Mocking creates a fake version of an API returning predefined responses — without calling the real service.<br><br>
+    <strong>When to use:</strong>
+    <ul>
+      <li>Third-party API unavailable in test env (payment gateway, SMS)</li>
+      <li>Testing edge cases (timeouts, 500 errors) hard to trigger in real API</li>
+      <li>Frontend team testing before backend is ready</li>
+      <li>Running tests without network dependencies</li>
+    </ul>
+    <strong>Tools:</strong> WireMock, MockServer, Postman Mock Server, MSW (frontend)<br><br>
+    <strong>Difference:</strong> Mock = verifies interactions were made; Stub = just returns predefined responses.`
+  },
+  {
+    tag: "api", diff: "medium",
+    q: "How do you test API pagination?",
+    a: `<strong>Key test scenarios:</strong>
+    <ul>
+      <li><strong>First page</strong> — <code>GET /items?page=1&amp;limit=10</code> returns first 10 items</li>
+      <li><strong>Last page</strong> — returns remaining items (may be fewer than limit)</li>
+      <li><strong>Empty page</strong> — page beyond total → 200 with empty array or 404</li>
+      <li><strong>Metadata</strong> — response includes total, page, per_page fields</li>
+      <li><strong>Item uniqueness</strong> — no duplicates across pages</li>
+      <li><strong>Ordering consistency</strong> — items in same order on repeated requests</li>
+      <li><strong>Invalid page</strong> — page=0, page=-1, page=abc → 400</li>
+      <li><strong>Large limit</strong> — limit=99999 → check if server caps it</li>
+    </ul>`
+  },
+  {
+    tag: "api", diff: "hard",
+    q: "What is GraphQL testing? How is it different from REST testing?",
+    a: `<strong>Key differences:</strong>
+    <ul>
+      <li>GraphQL has a single endpoint (e.g., <code>/graphql</code>); REST has many endpoints</li>
+      <li>Client specifies exactly what data it needs — no over/under fetching</li>
+      <li>Always uses POST with a query body (even for reads)</li>
+      <li>HTTP status is almost always 200 — errors are in the response body</li>
+    </ul>
+    <strong>GraphQL test scenarios:</strong>
+    <ul>
+      <li>Query returns exactly requested fields</li>
+      <li>Mutations create/update/delete correctly</li>
+      <li>Invalid field names return helpful errors</li>
+      <li>Nested query performance (N+1 problem)</li>
+      <li>Authorization — field-level auth not bypassed via fragments</li>
+      <li>Introspection disabled in production</li>
+    </ul>`
+  },
+
+  // ── AGILE (additional) ──
+  {
+    tag: "agile", diff: "medium",
+    q: "What is the Three Amigos meeting?",
+    a: `The Three Amigos is a collaboration session between:<br>
+    <ul>
+      <li><strong>Business/Product Owner</strong> — defines the intent and value</li>
+      <li><strong>Developer</strong> — defines how to build it</li>
+      <li><strong>QA/Tester</strong> — defines how to verify it</li>
+    </ul>
+    <strong>Purpose:</strong> Align on acceptance criteria before development starts. Each person brings their perspective to catch misunderstandings early.<br><br>
+    <strong>Outcome:</strong> Refined acceptance criteria, shared understanding, fewer rework cycles.<br><br>
+    <strong>When:</strong> Before or during sprint planning, for each user story.
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Food Delivery App</div>
+      <strong>Story:</strong> "As a user, I want to save multiple addresses."<br><br>
+      <strong>PO says:</strong> "Users should be able to save Home, Work, and Other addresses."<br>
+      <strong>Dev asks:</strong> "Is there a limit on how many 'Other' addresses? How do we handle duplicates?"<br>
+      <strong>QA asks:</strong> "What happens if the user deletes their only saved address mid-checkout? Can two addresses have the same name?"<br><br>
+      Without this meeting, Dev might build it with no limit and no duplicate check, QA would find bugs after coding is done, and the feature would get delayed. The 3 Amigos session prevents this rework entirely.
+    </div>`
+  },
+  {
+    tag: "agile", diff: "hard",
+    q: "What is Test-Driven Development (TDD)?",
+    a: `TDD is a development technique where tests are written BEFORE the code.<br><br>
+    <strong>Red-Green-Refactor cycle:</strong>
+    <ul>
+      <li><strong>Red</strong> — Write a failing test for the desired feature</li>
+      <li><strong>Green</strong> — Write minimal code to make the test pass</li>
+      <li><strong>Refactor</strong> — Clean up code while keeping tests green</li>
+    </ul>
+    <strong>QA's role:</strong>
+    <ul>
+      <li>Collaborate on test scenarios with developers</li>
+      <li>Write integration and acceptance tests to complement unit tests</li>
+      <li>Ensure acceptance criteria map to automated tests</li>
+    </ul>
+    <strong>Benefits:</strong> Better design, fewer bugs, living documentation.`
+  },
+  {
+    tag: "agile", diff: "medium",
+    q: "What is a Sprint Retrospective and what does QA contribute?",
+    a: `A Sprint Retrospective is a meeting at the end of each sprint where the team reflects on the process.<br><br>
+    <strong>Format:</strong> What went well / What didn't / Action items<br><br>
+    <strong>QA contributions:</strong>
+    <ul>
+      <li>Report on test coverage achieved vs planned</li>
+      <li>Highlight recurring defect types and root causes</li>
+      <li>Suggest process improvements (e.g., earlier requirement reviews)</li>
+      <li>Raise automation gaps that slowed testing</li>
+      <li>Flag environment or tooling issues that caused delays</li>
+    </ul>`
+  },
+
+  // ── TOOLS (additional) ──
+  {
+    tag: "tools", diff: "medium",
+    q: "What is JMeter and how do you create a basic load test?",
+    a: `Apache JMeter is an open-source performance testing tool.<br><br>
+    <strong>Basic load test setup:</strong>
+    <ul>
+      <li><strong>Thread Group</strong> — define number of users, ramp-up time, loop count</li>
+      <li><strong>HTTP Request Sampler</strong> — target endpoint, method, parameters</li>
+      <li><strong>Listeners</strong> — View Results Tree, Summary Report, Aggregate Report</li>
+      <li><strong>Assertions</strong> — Response Code = 200, response time &lt; 2000ms</li>
+    </ul>
+    <strong>Run modes:</strong>
+    <ul>
+      <li>GUI mode — design tests</li>
+      <li>Non-GUI mode — <code>jmeter -n -t test.jmx -l results.jtl</code></li>
+    </ul>`
+  },
+  {
+    tag: "tools", diff: "easy",
+    q: "Why does a QA engineer need to know Git?",
+    a: `Git knowledge is essential for modern QA engineers:<br><br>
+    <strong>Common Git tasks for QA:</strong>
+    <ul>
+      <li><code>git clone</code> — get the automation repository</li>
+      <li><code>git pull</code> — get latest test scripts</li>
+      <li><code>git checkout -b feature/new-tests</code> — create a branch for new tests</li>
+      <li><code>git add / commit / push</code> — commit and push test changes</li>
+      <li><code>git log</code> — check recent changes that might affect testing</li>
+      <li><code>git diff</code> — see what changed in a release or branch</li>
+    </ul>
+    <strong>Also:</strong> Understanding branches helps QA know what is in a build and what to test.`
+  },
+  {
+    tag: "tools", diff: "medium",
+    q: "What is Allure Report and how do you use it?",
+    a: `Allure is a test reporting framework that generates rich HTML reports from test results.<br><br>
+    <strong>Features:</strong>
+    <ul>
+      <li>Visual dashboard with pass/fail/skip statistics</li>
+      <li>Test history and trends over time</li>
+      <li>Step-by-step test execution details</li>
+      <li>Screenshots, logs, and attachments per test</li>
+      <li>Epic/feature/story categorization</li>
+    </ul>
+    <strong>Integration:</strong><br>
+    <code>@Step("Enter username")</code> — marks a test step<br>
+    <code>@Attachment</code> — attaches screenshot or data<br>
+    Run: <code>allure serve allure-results</code> to view the report<br><br>
+    Integrates with TestNG, JUnit, Cucumber, Pytest.`
+  },
+
+  // ── PERFORMANCE (additional) ──
+  {
+    tag: "perf", diff: "medium",
+    q: "What is Scalability Testing?",
+    a: `Scalability testing evaluates how well the application scales up or down as load changes.<br><br>
+    <strong>Vertical scaling</strong> — adding more resources to a single server (more CPU/RAM).<br>
+    <strong>Horizontal scaling</strong> — adding more servers/instances.<br><br>
+    <strong>What to measure:</strong>
+    <ul>
+      <li>How response time changes as users increase from 100 to 1000 to 10,000</li>
+      <li>At what point does performance degrade significantly?</li>
+      <li>Does auto-scaling kick in at the right time?</li>
+      <li>Cost per transaction at different scale levels</li>
+    </ul>
+    <strong>Tools:</strong> JMeter, k6, Gatling, Locust`
+  },
+  {
+    tag: "perf", diff: "hard",
+    q: "How do you design a Performance Test Plan?",
+    a: `<strong>Key sections:</strong>
+    <ul>
+      <li><strong>Objectives</strong> — e.g., 1000 concurrent users with &lt;2s response time</li>
+      <li><strong>Scope</strong> — which endpoints and workflows to test</li>
+      <li><strong>Test types</strong> — load, stress, spike, endurance</li>
+      <li><strong>Workload model</strong> — realistic user distribution, think time, ramp-up pattern</li>
+      <li><strong>Environment</strong> — production-like environment, network conditions</li>
+      <li><strong>Monitoring plan</strong> — what metrics to capture and on which systems</li>
+      <li><strong>SLA/KPIs</strong> — pass/fail criteria for each metric</li>
+      <li><strong>Test data</strong> — sufficient realistic data for load</li>
+      <li><strong>Tools</strong> — JMeter/k6/Gatling + monitoring (Grafana, Datadog)</li>
+    </ul>`
+  },
+
+  // ── DATABASE TESTING ──
+  {
+    tag: "db", diff: "easy",
+    q: "What is Database Testing? What do you verify?",
+    a: `Database testing verifies the integrity, accuracy, and security of data stored in a database.<br><br>
+    <strong>What to verify:</strong>
+    <ul>
+      <li><strong>Data integrity</strong> — data is accurate and consistent</li>
+      <li><strong>Data mapping</strong> — UI data matches DB data</li>
+      <li><strong>CRUD operations</strong> — create, read, update, delete work correctly</li>
+      <li><strong>Stored procedures</strong> — execute correctly and return expected results</li>
+      <li><strong>Constraints</strong> — NOT NULL, UNIQUE, FK violations handled correctly</li>
+      <li><strong>Performance</strong> — query execution times within acceptable range</li>
+      <li><strong>Security</strong> — proper access controls in place</li>
+    </ul>`
+  },
+  {
+    tag: "db", diff: "medium",
+    q: "What SQL queries does a QA engineer commonly use?",
+    a: `<strong>Verify data was inserted:</strong><br>
+    <code>SELECT * FROM users WHERE email = 'test@example.com';</code><br><br>
+    <strong>Count records after an operation:</strong><br>
+    <code>SELECT COUNT(*) FROM orders WHERE status = 'PENDING';</code><br><br>
+    <strong>Verify JOIN data consistency:</strong><br>
+    <code>SELECT u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id;</code><br><br>
+    <strong>Find orphan records (data integrity):</strong><br>
+    <code>SELECT * FROM orders WHERE user_id NOT IN (SELECT id FROM users);</code><br><br>
+    <strong>Check for duplicate emails:</strong><br>
+    <code>SELECT email, COUNT(*) FROM users GROUP BY email HAVING COUNT(*) &gt; 1;</code>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — E-Commerce Order Testing</div>
+      After testing "Place Order" on a staging e-commerce site, a QA runs these DB checks:<br><br>
+      <code>-- 1. Confirm order was created</code><br>
+      <code>SELECT * FROM orders WHERE user_id = 42 ORDER BY created_at DESC LIMIT 1;</code><br><br>
+      <code>-- 2. Verify order items match cart</code><br>
+      <code>SELECT oi.product_name, oi.qty, oi.price FROM order_items oi WHERE oi.order_id = 1001;</code><br><br>
+      <code>-- 3. Confirm inventory was decremented</code><br>
+      <code>SELECT stock_qty FROM products WHERE id = 55;</code><br><br>
+      <code>-- 4. Check payment record created</code><br>
+      <code>SELECT status, amount FROM payments WHERE order_id = 1001;</code>
+    </div>`
+  },
+  {
+    tag: "db", diff: "medium",
+    q: "What is Data Integrity Testing?",
+    a: `Data integrity testing ensures data is accurate, consistent, and reliable across the application and database.<br><br>
+    <strong>Types of integrity:</strong>
+    <ul>
+      <li><strong>Entity integrity</strong> — primary key is unique and not null</li>
+      <li><strong>Referential integrity</strong> — foreign keys reference valid records; no orphan data</li>
+      <li><strong>Domain integrity</strong> — data values are within allowed ranges and types</li>
+      <li><strong>User-defined integrity</strong> — business rules enforced (e.g., order total = sum of items)</li>
+    </ul>
+    <strong>Test cases:</strong>
+    <ul>
+      <li>Delete a parent record and verify cascade behavior</li>
+      <li>Insert a record with an invalid foreign key → error expected</li>
+      <li>Verify calculated fields match expected formula</li>
+    </ul>`
+  },
+  {
+    tag: "db", diff: "hard",
+    q: "What is ETL Testing?",
+    a: `ETL (Extract, Transform, Load) testing validates data pipelines that move data from source systems to data warehouses.<br><br>
+    <strong>Three phases tested:</strong>
+    <ul>
+      <li><strong>Extract</strong> — data pulled correctly from source (no missing or extra records)</li>
+      <li><strong>Transform</strong> — transformations applied correctly (mappings, calculations, format changes)</li>
+      <li><strong>Load</strong> — data loaded correctly into target (correct table, no duplicates)</li>
+    </ul>
+    <strong>Common test checks:</strong>
+    <ul>
+      <li>Row count: source count = target count</li>
+      <li>Data reconciliation: spot-check specific records</li>
+      <li>Null handling: NULLs transformed correctly</li>
+      <li>Rejected records: logged and handled correctly</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — E-Commerce Daily Sales Report</div>
+      Every night at 2 AM, an ETL job moves the day's orders from the transactional DB (MySQL) to the analytics warehouse (Redshift).<br><br>
+      <strong>QA tests:</strong><br>
+      <code>-- Extract check: count in source</code><br>
+      <code>SELECT COUNT(*) FROM mysql.orders WHERE DATE(created_at) = '2025-01-15'; -- 8,432</code><br><br>
+      <code>-- Load check: count in target</code><br>
+      <code>SELECT COUNT(*) FROM redshift.fact_orders WHERE order_date = '2025-01-15'; -- 8,432 ✅</code><br><br>
+      <strong>Transform check:</strong> Source stores price in paise (₹50000), target should store in rupees (₹500) — verify the division logic is correct.<br><br>
+      <strong>Bug found:</strong> Orders placed at 11:58 PM were excluded because the ETL used <code>&lt; midnight</code> instead of <code>&lt;= midnight</code>. Boundary condition!
+    </div>`
+  },
+  {
+    tag: "db", diff: "easy",
+    q: "What is the difference between DELETE, TRUNCATE, and DROP?",
+    a: `<table style="font-size:.82rem;border-collapse:collapse;width:100%">
+      <tr style="background:#0f1117"><th style="padding:5px 8px;border:1px solid #2d3348">Command</th><th style="padding:5px 8px;border:1px solid #2d3348">What it does</th><th style="padding:5px 8px;border:1px solid #2d3348">Rollback?</th><th style="padding:5px 8px;border:1px solid #2d3348">WHERE clause</th></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">DELETE</td><td style="padding:5px 8px;border:1px solid #2d3348">Removes specific rows</td><td style="padding:5px 8px;border:1px solid #2d3348">Yes</td><td style="padding:5px 8px;border:1px solid #2d3348">Yes</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">TRUNCATE</td><td style="padding:5px 8px;border:1px solid #2d3348">Removes all rows fast</td><td style="padding:5px 8px;border:1px solid #2d3348">Usually no</td><td style="padding:5px 8px;border:1px solid #2d3348">No</td></tr>
+      <tr><td style="padding:5px 8px;border:1px solid #2d3348">DROP</td><td style="padding:5px 8px;border:1px solid #2d3348">Removes entire table</td><td style="padding:5px 8px;border:1px solid #2d3348">No</td><td style="padding:5px 8px;border:1px solid #2d3348">No</td></tr>
+    </table><br>
+    <strong>QA relevance:</strong> Use DELETE for test data cleanup (reversible). Never run TRUNCATE/DROP on shared environments without confirmation.`
+  },
+  {
+    tag: "db", diff: "hard",
+    q: "How do you verify database changes after a UI transaction?",
+    a: `<strong>Step-by-step approach:</strong>
+    <ul>
+      <li><strong>Know the expected DB change</strong> — understand which tables and columns change</li>
+      <li><strong>Capture before state</strong> — query DB before the action</li>
+      <li><strong>Perform the UI action</strong> — e.g., submit an order</li>
+      <li><strong>Capture after state</strong> — query DB after the action</li>
+      <li><strong>Compare</strong> — verify correct records inserted, updated, or deleted</li>
+    </ul>
+    <strong>Verify additionally:</strong>
+    <ul>
+      <li>All related tables updated (not just the main one)</li>
+      <li>Timestamps are reasonable</li>
+      <li>Status fields match UI state</li>
+      <li>No orphan or duplicate records created</li>
+      <li>Audit logs created if applicable</li>
+    </ul>`
+  },
+  {
+    tag: "db", diff: "medium",
+    q: "What is Stored Procedure Testing?",
+    a: `Stored procedure testing validates that database stored procedures produce correct results.<br><br>
+    <strong>Test cases to cover:</strong>
+    <ul>
+      <li><strong>Happy path</strong> — valid inputs produce expected output</li>
+      <li><strong>NULL inputs</strong> — how does the procedure handle nulls?</li>
+      <li><strong>Boundary values</strong> — test at input limits</li>
+      <li><strong>Error handling</strong> — invalid inputs trigger correct error or exception</li>
+      <li><strong>Performance</strong> — execution time within acceptable range</li>
+      <li><strong>Transaction behavior</strong> — commits and rollbacks work correctly</li>
+    </ul>
+    <strong>How to test:</strong> Call the procedure directly via SQL client, then verify output tables or return values.`
+  },
+  {
+    tag: "db", diff: "hard",
+    q: "How do you handle test data in databases across multiple environments?",
+    a: `<strong>Challenges:</strong>
+    <ul>
+      <li>Test data must be consistent and repeatable</li>
+      <li>Data should not interfere between test runs</li>
+      <li>Sensitive data cannot be copied from production</li>
+    </ul>
+    <strong>Strategies:</strong>
+    <ul>
+      <li><strong>Setup/Teardown scripts</strong> — insert data before test, delete after</li>
+      <li><strong>Database snapshots</strong> — restore known state before test suite runs</li>
+      <li><strong>Seed files</strong> — predefined SQL scripts for consistent base data</li>
+      <li><strong>Transactions</strong> — wrap tests in transactions, rollback after</li>
+      <li><strong>Factories/Fixtures</strong> — programmatically create data per test</li>
+      <li><strong>Data masking</strong> — anonymize production data for lower environments</li>
+    </ul>`
+  },
+
+  // ── SECURITY TESTING ──
+  {
+    tag: "security", diff: "easy",
+    q: "What is OWASP Top 10? Which ones does QA test?",
+    a: `OWASP Top 10 is the most critical web application security risks:<br><br>
+    <ol style="margin:6px 0 6px 18px">
+      <li>Broken Access Control</li>
+      <li>Cryptographic Failures</li>
+      <li>Injection (SQL, NoSQL, LDAP)</li>
+      <li>Insecure Design</li>
+      <li>Security Misconfiguration</li>
+      <li>Vulnerable and Outdated Components</li>
+      <li>Identification and Authentication Failures</li>
+      <li>Software and Data Integrity Failures</li>
+      <li>Security Logging and Monitoring Failures</li>
+      <li>Server-Side Request Forgery (SSRF)</li>
+    </ol>
+    <strong>QA commonly tests:</strong> #1 (access control), #3 (injection), #7 (auth), #5 (misconfiguration).`
+  },
+  {
+    tag: "security", diff: "medium",
+    q: "What is SQL Injection and how do you test for it?",
+    a: `SQL Injection inserts malicious SQL code into input fields to manipulate the database.<br><br>
+    <strong>Common payloads to test:</strong><br>
+    <code>' OR '1'='1</code> — always true bypass<br>
+    <code>'; DROP TABLE users; --</code> — destructive command<br>
+    <code>' UNION SELECT username, password FROM users --</code> — data extraction<br><br>
+    <strong>Where to test:</strong> Any input that goes to the database — login, search, filters, URL parameters, API request body.<br><br>
+    <strong>Expected result:</strong> Input sanitized, error message shown without DB details, no unauthorized access.<br><br>
+    <strong>Tools:</strong> SQLMap, OWASP ZAP, Burp Suite
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Login Bypass Attack</div>
+      In a vulnerable banking login form:<br>
+      <strong>Username field:</strong> <code>admin' --</code><br>
+      <strong>Password field:</strong> (anything)<br><br>
+      The SQL query becomes:<br>
+      <code>SELECT * FROM users WHERE username='admin'--' AND password='...'</code><br>
+      The <code>--</code> comments out the password check → attacker logs in as admin with no password!<br><br>
+      <strong>How QA catches it:</strong> Enter <code>' OR '1'='1</code> in the username field. If the app lets you in without a valid account, it's vulnerable.<br>
+      <strong>Correct behaviour:</strong> App should return a generic "Invalid credentials" error and log the attempt.
+    </div>`
+  },
+  {
+    tag: "security", diff: "medium",
+    q: "What is XSS (Cross-Site Scripting) and how do you test for it?",
+    a: `XSS allows attackers to inject malicious scripts into web pages viewed by other users.<br><br>
+    <strong>Types:</strong>
+    <ul>
+      <li><strong>Stored XSS</strong> — script saved in DB and executed when others view the page</li>
+      <li><strong>Reflected XSS</strong> — script in URL parameter, immediately reflected</li>
+      <li><strong>DOM-based XSS</strong> — manipulates DOM without server interaction</li>
+    </ul>
+    <strong>Test payloads:</strong><br>
+    <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code><br>
+    <code>&lt;img src=x onerror=alert(1)&gt;</code><br><br>
+    <strong>Expected result:</strong> Script sanitized and not executed.<br>
+    <strong>Tools:</strong> OWASP ZAP, Burp Suite, browser DevTools`
+  },
+  {
+    tag: "security", diff: "hard",
+    q: "What is CSRF (Cross-Site Request Forgery)?",
+    a: `CSRF tricks an authenticated user's browser into making unwanted requests to an application.<br><br>
+    <strong>Example attack:</strong> User is logged into bank.com. Attacker sends a link that triggers a hidden form POSTing to bank.com/transfer — the browser sends the user's session cookies automatically.<br><br>
+    <strong>How to test:</strong>
+    <ul>
+      <li>Check if sensitive forms have CSRF tokens</li>
+      <li>Submit forms without the token → should fail with 403</li>
+      <li>Try reusing an old CSRF token → should fail</li>
+      <li>Check SameSite cookie attribute is set correctly</li>
+    </ul>
+    <strong>Mitigation:</strong> CSRF tokens, SameSite cookies, CORS policy, re-authentication for sensitive actions.`
+  },
+  {
+    tag: "security", diff: "medium",
+    q: "What security checks should QA include in testing?",
+    a: `<strong>Authentication and Session:</strong>
+    <ul>
+      <li>Password strength requirements enforced</li>
+      <li>Account lockout after N failed attempts</li>
+      <li>Session expires after inactivity</li>
+      <li>Session token invalidated on logout</li>
+      <li>HTTPS enforced everywhere</li>
+    </ul>
+    <strong>Authorization:</strong>
+    <ul>
+      <li>Users cannot access other users' data (horizontal privilege escalation)</li>
+      <li>Regular users cannot access admin endpoints (vertical privilege escalation)</li>
+      <li>Role-based access enforced throughout</li>
+    </ul>
+    <strong>Input Validation:</strong>
+    <ul>
+      <li>SQL injection and XSS payloads are rejected</li>
+      <li>File upload validates type, size, and content</li>
+    </ul>`
+  },
+  {
+    tag: "security", diff: "hard",
+    q: "What is Penetration Testing? How is it different from security testing by QA?",
+    a: `<strong>Penetration Testing</strong><br>
+    — Simulated attack by a security specialist to find exploitable vulnerabilities.<br>
+    — Done by ethical hackers and security engineers.<br>
+    — Scope: full system, infrastructure, social engineering.<br>
+    — Result: detailed vulnerability report with exploitation evidence.<br><br>
+    <strong>Security Testing by QA</strong><br>
+    — Checks that security requirements and controls are in place.<br>
+    — Done by QA as part of normal functional testing.<br>
+    — Scope: OWASP Top 10, authentication, authorization, input validation.<br>
+    — Result: test pass/fail against defined security criteria.<br><br>
+    <strong>Both are needed</strong> — QA catches common issues; pen testers find deeper vulnerabilities.`
+  },
+  {
+    tag: "security", diff: "medium",
+    q: "What tools are used for security testing?",
+    a: `<strong>Scanning and Proxy:</strong>
+    <ul>
+      <li><strong>OWASP ZAP</strong> — open-source web app security scanner</li>
+      <li><strong>Burp Suite</strong> — industry-standard proxy for intercepting and modifying requests</li>
+    </ul>
+    <strong>Injection Testing:</strong>
+    <ul>
+      <li><strong>SQLMap</strong> — automated SQL injection testing</li>
+    </ul>
+    <strong>Static Analysis:</strong>
+    <ul>
+      <li><strong>SonarQube</strong> — code-level security issues</li>
+      <li><strong>Snyk</strong> — dependency vulnerability scanning</li>
+    </ul>
+    <strong>Network:</strong>
+    <ul>
+      <li><strong>Nmap</strong> — network port scanning (with authorization)</li>
+    </ul>`
+  },
+
+  // ── MOBILE TESTING ──
+  {
+    tag: "mobile", diff: "easy",
+    q: "What are the unique challenges of Mobile Testing?",
+    a: `<strong>Device fragmentation:</strong>
+    <ul>
+      <li>Thousands of device models with different screen sizes, OS versions, manufacturers</li>
+    </ul>
+    <strong>Network variability:</strong>
+    <ul>
+      <li>WiFi, 4G/5G, 3G, offline, weak signal scenarios</li>
+    </ul>
+    <strong>Hardware dependencies:</strong>
+    <ul>
+      <li>Camera, GPS, fingerprint, accelerometer, battery states</li>
+    </ul>
+    <strong>Platform differences:</strong>
+    <ul>
+      <li>iOS vs Android UX patterns and APIs differ significantly</li>
+    </ul>
+    <strong>Interruptions:</strong>
+    <ul>
+      <li>Calls, push notifications, low battery, app switching mid-task</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — WhatsApp Message Loss Bug</div>
+      <strong>Scenario:</strong> A user is composing a long message on WhatsApp. Mid-way through, an incoming call arrives. After the call ends, the user returns to WhatsApp — the draft message is gone.<br><br>
+      <strong>This is an "interruption" bug</strong> — the app didn't save draft state before handling the phone call interrupt.<br><br>
+      <strong>How QA catches this:</strong> Add interruption test cases to every messaging/form feature — simulate an incoming call, notification, or app switch at every major interaction point.<br><br>
+      <strong>Another real example (Google Pay):</strong> Network drops exactly when UPI PIN is entered — was the transaction completed or not? QA must test this "mid-transaction network loss" scenario to prevent user confusion and double payments.
+    </div>`
+  },
+  {
+    tag: "mobile", diff: "medium",
+    q: "What is the difference between Native, Hybrid, and Mobile Web apps?",
+    a: `<strong>Native Apps</strong><br>
+    — Built specifically for iOS (Swift) or Android (Kotlin).<br>
+    — Best performance, full device access.<br>
+    — Testing: separate suites per platform.<br><br>
+    <strong>Hybrid Apps</strong><br>
+    — Web content wrapped in a native shell (React Native, Ionic, Cordova).<br>
+    — One codebase, cross-platform.<br>
+    — Testing: mix of web and native testing techniques.<br><br>
+    <strong>Mobile Web Apps</strong><br>
+    — Regular websites accessed via mobile browser. No installation required.<br>
+    — Testing: standard web testing, focus on responsive design.<br><br>
+    <strong>Automation:</strong> Appium handles all three types.`
+  },
+  {
+    tag: "mobile", diff: "medium",
+    q: "What is Appium and how does it work?",
+    a: `Appium is an open-source test automation framework for mobile applications (iOS and Android).<br><br>
+    <strong>Architecture:</strong>
+    <ul>
+      <li>Appium Server — receives commands via WebDriver protocol</li>
+      <li>Client library — your test code (Java, Python, JS)</li>
+      <li>Android driver: UIAutomator2</li>
+      <li>iOS driver: XCUITest</li>
+    </ul>
+    <strong>Key capabilities:</strong>
+    <ul>
+      <li>Tests on real devices and emulators/simulators</li>
+      <li>Supports Native, Hybrid, and Web apps</li>
+      <li>No need to modify the app under test</li>
+      <li>Reuse Selenium WebDriver skills (same API)</li>
+    </ul>`
+  },
+  {
+    tag: "mobile", diff: "hard",
+    q: "What mobile-specific test scenarios should every QA cover?",
+    a: `<strong>Interruption Testing:</strong>
+    <ul>
+      <li>Incoming call during a transaction → app resumes correctly after call ends</li>
+      <li>Push notification received → app state preserved</li>
+      <li>Battery low warning → app handles gracefully</li>
+    </ul>
+    <strong>Connectivity:</strong>
+    <ul>
+      <li>Switch from WiFi to cellular mid-session</li>
+      <li>Go offline and come back online</li>
+      <li>Slow network (2G/3G) performance and timeouts</li>
+    </ul>
+    <strong>Device-specific:</strong>
+    <ul>
+      <li>Rotate screen — portrait to landscape and back</li>
+      <li>Lock/unlock device during session</li>
+      <li>Different font sizes and accessibility settings</li>
+      <li>Low storage space scenarios</li>
+    </ul>
+    <strong>App lifecycle:</strong>
+    <ul>
+      <li>Kill and relaunch — session/cart restored?</li>
+      <li>Background app for 30 minutes — still works?</li>
+      <li>App update — existing user data preserved?</li>
+    </ul>`
+  },
+  {
+    tag: "mobile", diff: "medium",
+    q: "What is Device Fragmentation and how do you manage it?",
+    a: `Device fragmentation means the app must work across thousands of device and OS combinations.<br><br>
+    <strong>Strategy:</strong>
+    <ul>
+      <li><strong>Analytics-driven</strong> — test on top devices used by actual users (Firebase/Mixpanel data)</li>
+      <li><strong>OS coverage</strong> — test on latest 2-3 OS versions (where 90%+ users are)</li>
+      <li><strong>Screen size matrix</strong> — small phone, large phone, tablet</li>
+      <li><strong>Manufacturer priority</strong> — Samsung, Apple, Google, Xiaomi (by market share)</li>
+    </ul>
+    <strong>Cloud device farms:</strong>
+    <ul>
+      <li><strong>BrowserStack / Sauce Labs</strong> — cloud-hosted real devices</li>
+      <li><strong>Firebase Test Lab</strong> — Google's device farm</li>
+      <li><strong>AWS Device Farm</strong> — Amazon's real device testing</li>
+    </ul>`
+  },
+  {
+    tag: "mobile", diff: "easy",
+    q: "What is Beta Testing on mobile apps? (TestFlight and Play Console)",
+    a: `Beta testing distributes a pre-release version to a limited group of real users to gather feedback before public launch.<br><br>
+    <strong>iOS — TestFlight:</strong>
+    <ul>
+      <li>Internal testing: up to 100 users (dev team)</li>
+      <li>External testing: up to 10,000 beta testers</li>
+      <li>Testers install via the TestFlight app</li>
+    </ul>
+    <strong>Android — Play Console Beta:</strong>
+    <ul>
+      <li>Closed: invite-only testers</li>
+      <li>Open: anyone can join via Play Store</li>
+    </ul>
+    <strong>QA's role in beta:</strong>
+    <ul>
+      <li>Define feedback collection process</li>
+      <li>Triage and prioritize reported issues</li>
+      <li>Monitor crash reports (Crashlytics, Firebase)</li>
+      <li>Decide go/no-go for public release</li>
+    </ul>`
+  },
+
+  // ── SCENARIO-BASED ──
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test a Login page completely?",
+    a: `<strong>Functional:</strong>
+    <ul>
+      <li>Valid username + valid password → successful login, redirect to dashboard</li>
+      <li>Valid username + wrong password → error message, no access</li>
+      <li>Empty username or password → field-level validation error</li>
+      <li>Both fields empty → error</li>
+      <li>Remember Me checkbox → session persists after browser close</li>
+      <li>Forgot Password link → redirects to reset flow</li>
+    </ul>
+    <strong>Security:</strong>
+    <ul>
+      <li>Account lockout after 5 failed attempts</li>
+      <li>SQL injection in username field → blocked</li>
+      <li>Password field masked by default; toggle works</li>
+      <li>HTTPS enforced</li>
+    </ul>
+    <strong>UI/UX:</strong>
+    <ul>
+      <li>Tab order: username → password → submit</li>
+      <li>Enter key submits form</li>
+      <li>Responsive on mobile devices</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test a Search functionality?",
+    a: `<strong>Functional:</strong>
+    <ul>
+      <li>Search existing item → correct results returned</li>
+      <li>Search non-existing item → "No results found" message</li>
+      <li>Empty search → all results or validation error</li>
+      <li>Partial search term → results include partial matches</li>
+      <li>Case-insensitive: "APPLE" and "apple" return same results</li>
+      <li>Special characters → handled gracefully, no crash</li>
+      <li>Very long search term → truncated or handled</li>
+    </ul>
+    <strong>Performance:</strong>
+    <ul>
+      <li>Results returned within 2 seconds</li>
+      <li>Autocomplete suggestions appear without lag</li>
+    </ul>
+    <strong>Filters and Sorting:</strong>
+    <ul>
+      <li>Filters narrow results correctly</li>
+      <li>Sort by price/date/relevance works correctly</li>
+      <li>Combining multiple filters returns correct results</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test a File Upload feature?",
+    a: `<strong>Valid cases:</strong>
+    <ul>
+      <li>Upload a valid file type (e.g., PDF) → success message and file available</li>
+      <li>Upload file at maximum allowed size → success</li>
+      <li>Upload multiple files (if supported) → all uploaded correctly</li>
+    </ul>
+    <strong>Invalid cases:</strong>
+    <ul>
+      <li>Upload unsupported file type (exe, js) → clear error message</li>
+      <li>Upload file exceeding size limit → error with size limit shown</li>
+      <li>Upload empty or corrupted file → error handled gracefully</li>
+      <li>No file selected, click upload → validation error</li>
+    </ul>
+    <strong>Security:</strong>
+    <ul>
+      <li>Upload file disguised with double extension (malware.pdf.exe) → rejected</li>
+      <li>Upload file with script content → sanitized, not executed</li>
+    </ul>
+    <strong>UX:</strong>
+    <ul>
+      <li>Progress indicator shows upload status</li>
+      <li>Cancel button works during upload</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test a Payment Gateway?",
+    a: `<strong>Functional (using test cards):</strong>
+    <ul>
+      <li>Valid card → payment success, order confirmed, email sent</li>
+      <li>Declined card → error message, order not placed</li>
+      <li>Expired card → validation error before submission</li>
+      <li>Incorrect CVV → transaction declined</li>
+      <li>Insufficient funds → declined with appropriate message</li>
+    </ul>
+    <strong>Security:</strong>
+    <ul>
+      <li>Card details encrypted in transit (HTTPS/TLS)</li>
+      <li>Card number masked on confirmation page</li>
+      <li>No card data stored after transaction</li>
+      <li>3DS/OTP flow triggered for extra verification</li>
+    </ul>
+    <strong>Edge cases:</strong>
+    <ul>
+      <li>Network timeout mid-transaction → order status clear, not charged twice</li>
+      <li>Double-click submit → only one charge processed</li>
+      <li>Browser refresh after payment → no duplicate order</li>
+      <li>Refund flow → correct amount returned in correct time</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Stripe / Razorpay Test Cards</div>
+      Stripe provides official test card numbers for QA:<br><br>
+      <code>4242 4242 4242 4242</code> → Always succeeds (Visa)<br>
+      <code>4000 0000 0000 0002</code> → Always declined<br>
+      <code>4000 0025 0000 3155</code> → Requires 3D Secure (OTP)<br>
+      <code>4000 0000 0000 9995</code> → Insufficient funds<br><br>
+      Use expiry: any future date, CVV: any 3 digits.<br><br>
+      <strong>QA scenario found in real project:</strong> When the network dropped after the Stripe API call but before the order confirmation was saved, users were charged but saw an error page. The fix: implement idempotency keys so Stripe never double-charges even on retry.
+    </div>`
+  },
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test a User Registration form?",
+    a: `<strong>Valid cases:</strong>
+    <ul>
+      <li>All fields valid → account created, confirmation email sent</li>
+      <li>Username at max character limit → accepted</li>
+      <li>International characters in name field → accepted</li>
+    </ul>
+    <strong>Negative cases:</strong>
+    <ul>
+      <li>Duplicate email → "Email already exists" error shown</li>
+      <li>Password below complexity requirements → error with rules displayed</li>
+      <li>Password does not match Confirm Password → mismatch error</li>
+      <li>Invalid email format → validation error</li>
+      <li>Mandatory fields empty → field-level errors shown</li>
+    </ul>
+    <strong>Security:</strong>
+    <ul>
+      <li>Password stored hashed in DB (no plaintext)</li>
+      <li>CAPTCHA prevents bot registration</li>
+      <li>Email verification link expires after 24 hours</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test an E-Commerce Checkout flow end-to-end?",
+    a: `<strong>Full E2E flow:</strong>
+    <ul>
+      <li>Add items to cart → quantities and prices correct</li>
+      <li>Apply discount/coupon code → price reduces correctly</li>
+      <li>Remove item from cart → total updates immediately</li>
+      <li>Enter shipping address → address validation works</li>
+      <li>Select shipping method → cost added to total</li>
+      <li>Enter payment details → secure and validated</li>
+      <li>Order summary before confirm → all details correct</li>
+      <li>Place order → confirmation screen shown, email sent, order in DB</li>
+    </ul>
+    <strong>Edge cases:</strong>
+    <ul>
+      <li>Item goes out of stock during checkout → handled gracefully</li>
+      <li>Coupon expired → clear error, original price restored</li>
+      <li>Session expires during checkout → cart preserved after re-login</li>
+      <li>Back button during payment → no duplicate order created</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test a Password Reset flow?",
+    a: `<strong>Happy path:</strong>
+    <ul>
+      <li>Enter registered email → reset link sent to inbox</li>
+      <li>Click reset link → redirect to reset page with valid token</li>
+      <li>Enter matching new passwords → password updated, confirmation shown</li>
+      <li>Login with new password → success</li>
+      <li>Old password no longer works → confirmed</li>
+    </ul>
+    <strong>Security:</strong>
+    <ul>
+      <li>Reset link expires after 1 hour</li>
+      <li>Reset link can only be used once</li>
+      <li>Unregistered email → generic message (do not reveal if email exists)</li>
+      <li>New password cannot be same as old password (if enforced)</li>
+      <li>Two reset links requested — only most recent works</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test a Real-Time Chat feature?",
+    a: `<strong>Functional:</strong>
+    <ul>
+      <li>Send message → appears instantly for sender and receiver</li>
+      <li>Receive message → notification shown without page refresh</li>
+      <li>Send empty message → validation error, not sent</li>
+      <li>Send special characters and emojis → displayed correctly</li>
+      <li>Send a very long message → wrapped and displayed correctly</li>
+    </ul>
+    <strong>Edge cases:</strong>
+    <ul>
+      <li>Go offline and reconnect → queued messages delivered on reconnect</li>
+      <li>Multiple devices open → same conversation synced</li>
+      <li>User blocked → blocked user cannot send messages</li>
+      <li>High volume (100 msgs/second) → no messages lost or duplicated</li>
+    </ul>
+    <strong>Performance:</strong>
+    <ul>
+      <li>Message delivery latency under 200ms on good connection</li>
+      <li>No memory leak over a long chat session</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — WhatsApp / Slack Edge Cases</div>
+      <strong>Bug: Message duplication (WhatsApp-like apps)</strong><br>
+      Tester sends a message on slow 2G network. The app retries after a timeout. Server processes both requests — message appears twice for the recipient. Fix: idempotency key per message send.<br><br>
+      <strong>Bug: Out-of-order messages (Slack)</strong><br>
+      User sends messages A, B, C rapidly. Due to server processing time, recipient sees A, C, B. Fix: timestamp-based ordering with sequence IDs.<br><br>
+      <strong>Test case that often gets missed:</strong> User opens the chat, writes a long reply, then the phone locks for 10 minutes. When unlocked, does the draft text remain? Does the WebSocket reconnect automatically? These interruption tests catch real production bugs.
+    </div>`
+  },
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test Session Timeout?",
+    a: `<strong>Test cases:</strong>
+    <ul>
+      <li>After N minutes of inactivity → session expires, user redirected to login</li>
+      <li>Timeout warning shown before expiry → user can extend session</li>
+      <li>After timeout, clicking any page → prompts re-login</li>
+      <li>After timeout, submitting a form → graceful error and redirect to login</li>
+      <li>Session token invalid after timeout → API returns 401</li>
+    </ul>
+    <strong>Security:</strong>
+    <ul>
+      <li>After logout, back button does not restore session</li>
+      <li>Expired session cookie cannot be reused</li>
+      <li>Different timeout for regular vs admin users (if applicable)</li>
+    </ul>
+    <strong>UX:</strong>
+    <ul>
+      <li>Timeout message is clear and user-friendly</li>
+      <li>After re-login, user is redirected to the originally intended page</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test a Dashboard with Charts and Data Visualizations?",
+    a: `<strong>Data accuracy:</strong>
+    <ul>
+      <li>Chart values match underlying data in DB</li>
+      <li>Totals and aggregates calculated correctly</li>
+      <li>Date filters apply correctly — range is inclusive/exclusive as expected</li>
+    </ul>
+    <strong>UI and Rendering:</strong>
+    <ul>
+      <li>Charts render without errors on all target browsers</li>
+      <li>Charts are responsive on mobile and tablet</li>
+      <li>Legend labels match the chart data series</li>
+      <li>Hover tooltips show correct values</li>
+    </ul>
+    <strong>Edge cases:</strong>
+    <ul>
+      <li>Zero data / empty state → chart shows "No data" gracefully</li>
+      <li>Very large data set → chart does not freeze the browser</li>
+      <li>Real-time data → chart updates without full page reload</li>
+      <li>Drill-down clicks → navigate to detailed view correctly</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test a Notification System (Email/Push/SMS)?",
+    a: `<strong>Trigger tests:</strong>
+    <ul>
+      <li>Correct notification sent for each trigger event</li>
+      <li>No notification sent when trigger condition is NOT met</li>
+      <li>No duplicate notifications for the same event</li>
+    </ul>
+    <strong>Content tests:</strong>
+    <ul>
+      <li>Correct recipient (user's email or phone)</li>
+      <li>Correct subject and title</li>
+      <li>Dynamic content populated correctly (user name, order ID)</li>
+      <li>Links in email work and go to the right destination</li>
+      <li>Unsubscribe/opt-out link functions correctly</li>
+    </ul>
+    <strong>Delivery:</strong>
+    <ul>
+      <li>Notification delivered within acceptable time</li>
+      <li>Retry logic: if first attempt fails, is it retried?</li>
+      <li>User opting out stops all future notifications of that type</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test a Multi-Language / Localization feature?",
+    a: `<strong>Translation accuracy:</strong>
+    <ul>
+      <li>All UI text is translated — no untranslated strings remain</li>
+      <li>No placeholder text visible (e.g., [MISSING_TRANSLATION])</li>
+      <li>Context-appropriate translations, not just literal word-for-word</li>
+    </ul>
+    <strong>Layout and UI:</strong>
+    <ul>
+      <li>Text expansion — German and Finnish can be 30% longer; check for overflow and truncation</li>
+      <li>RTL languages (Arabic, Hebrew) — layout mirrored correctly</li>
+      <li>Date formats — MM/DD/YYYY vs DD/MM/YYYY per locale</li>
+      <li>Number formats — 1,000.50 vs 1.000,50</li>
+      <li>Currency symbols and their placement</li>
+    </ul>
+    <strong>Functionality:</strong>
+    <ul>
+      <li>Language switch applies immediately without requiring logout</li>
+      <li>User preference is saved across sessions</li>
+      <li>Emails sent in user's selected language</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "medium",
+    q: "Scenario: How would you test a Shopping Cart?",
+    a: `<strong>Basic operations:</strong>
+    <ul>
+      <li>Add single item → correct product, quantity=1, correct price shown</li>
+      <li>Add same item again → quantity increments or separate line per config</li>
+      <li>Increase/decrease quantity → total price updates immediately</li>
+      <li>Remove item → cart updates and total recalculated</li>
+      <li>Empty cart → empty state message shown</li>
+    </ul>
+    <strong>Calculations:</strong>
+    <ul>
+      <li>Subtotal = sum of (price × quantity) for all items</li>
+      <li>Tax calculated correctly per region</li>
+      <li>Discounts and coupons applied correctly</li>
+      <li>Grand total = subtotal + tax + shipping - discount</li>
+    </ul>
+    <strong>Persistence:</strong>
+    <ul>
+      <li>Cart preserved after logout and re-login</li>
+      <li>Cart synced across browser tabs</li>
+      <li>Out-of-stock items flagged before checkout</li>
+    </ul>`
+  },
+  {
+    tag: "scenario", diff: "hard",
+    q: "Scenario: How would you test a Social Media Feed with Infinite Scroll?",
+    a: `<strong>Content accuracy:</strong>
+    <ul>
+      <li>Feed shows posts from followed accounts in correct order</li>
+      <li>Blocked user posts do not appear</li>
+      <li>Deleted posts disappear from feed</li>
+    </ul>
+    <strong>Infinite Scroll:</strong>
+    <ul>
+      <li>New posts load as user scrolls down</li>
+      <li>No duplicates across scroll batches</li>
+      <li>No missing posts between pages</li>
+      <li>Scroll position maintained after back navigation</li>
+    </ul>
+    <strong>Performance:</strong>
+    <ul>
+      <li>Initial load time under 2 seconds</li>
+      <li>Images lazy-loaded to reduce bandwidth</li>
+      <li>No memory leak after scrolling 500+ posts</li>
+    </ul>
+    <strong>Real-time:</strong>
+    <ul>
+      <li>"New posts available" banner appears without refresh</li>
+      <li>Like and comment counts update in real time</li>
+    </ul>`
+  },
+
+  // ── PROJECT-RELATED ──
+  {
+    tag: "project", diff: "medium",
+    q: "How do you create a Test Strategy for a new project from scratch?",
+    a: `<strong>Step-by-step approach:</strong>
+    <ul>
+      <li><strong>Understand the product</strong> — read requirements, architecture docs, user stories</li>
+      <li><strong>Define testing levels</strong> — unit, integration, system, UAT</li>
+      <li><strong>Define testing types</strong> — functional, regression, performance, security, accessibility</li>
+      <li><strong>Choose tools</strong> — automation framework, API tools, bug tracker, test management</li>
+      <li><strong>Define environments</strong> — dev, QA, staging, production</li>
+      <li><strong>Set standards</strong> — entry/exit criteria, severity matrix, test case format</li>
+      <li><strong>Automation approach</strong> — what to automate, languages, CI integration</li>
+      <li><strong>Risk assessment</strong> — identify high-risk areas to prioritize</li>
+      <li><strong>Get sign-off</strong> — review with PM, dev lead, and stakeholders</li>
+    </ul>`
+  },
+  {
+    tag: "project", diff: "hard",
+    q: "How do you estimate test effort for a new feature or sprint?",
+    a: `<strong>Factors to consider:</strong>
+    <ul>
+      <li>Complexity of the feature (simple CRUD vs complex business logic)</li>
+      <li>Number of test scenarios: happy path + negative + edge cases</li>
+      <li>Test types needed: manual + automation + performance + security</li>
+      <li>Number of environments to test in</li>
+      <li>Dependency on external systems or third parties</li>
+      <li>QA team's familiarity with the area</li>
+    </ul>
+    <strong>Estimation techniques:</strong>
+    <ul>
+      <li><strong>Analogy-based</strong> — compare to similar past features</li>
+      <li><strong>Three-point estimation</strong> — (Optimistic + 4×Most Likely + Pessimistic) / 6</li>
+      <li><strong>Story points</strong> — relative sizing in Agile planning poker</li>
+      <li><strong>Test case count × average time per case</strong></li>
+    </ul>
+    Always add a 20-30% buffer for unexpected issues.`
+  },
+  {
+    tag: "project", diff: "medium",
+    q: "How do you report testing status to stakeholders?",
+    a: `<strong>Key information to include:</strong>
+    <ul>
+      <li>Test execution progress: X of Y test cases executed (% complete)</li>
+      <li>Pass/Fail/Blocked breakdown</li>
+      <li>Open defects by severity (Critical/High/Medium/Low)</li>
+      <li>Defects resolved vs new defects opened (defect trend)</li>
+      <li>Risks and blockers</li>
+      <li>Coverage gaps vs planned scope</li>
+    </ul>
+    <strong>Reporting formats:</strong>
+    <ul>
+      <li><strong>Daily standup</strong> — verbal update on progress and blockers</li>
+      <li><strong>Weekly status report</strong> — email/Confluence with metrics</li>
+      <li><strong>Live dashboard</strong> — Jira/TestRail dashboards for real-time visibility</li>
+      <li><strong>Exit report</strong> — summary when testing phase ends</li>
+    </ul>`
+  },
+  {
+    tag: "project", diff: "hard",
+    q: "What is your approach when a Production bug is reported?",
+    a: `<strong>Immediate response (SLA-driven):</strong>
+    <ul>
+      <li>Assess severity — is it impacting all users or a subset?</li>
+      <li>Reproduce the issue on staging or production</li>
+      <li>Document clearly: steps, environment, screenshots, logs</li>
+      <li>Escalate to the right team (dev, DevOps, PM)</li>
+    </ul>
+    <strong>Investigation:</strong>
+    <ul>
+      <li>Check when it started — correlate with recent deployments</li>
+      <li>Check server logs and error monitoring (Sentry, Datadog)</li>
+      <li>Determine if environment-specific or universal</li>
+    </ul>
+    <strong>After fix:</strong>
+    <ul>
+      <li>Retest fix in staging, then verify in production</li>
+      <li>Run regression on related areas</li>
+      <li>Root cause analysis — why was this not caught in testing?</li>
+      <li>Add test case to prevent regression</li>
+    </ul>
+    <div class="real-example">
+      <div class="real-example-label">Real-World Example — Netflix Login Down</div>
+      <strong>Scenario:</strong> Monday 9 AM — Sentry alert fires: "500 errors spiking on /auth/login, 30% of users affected."<br><br>
+      <strong>QA/Team actions:</strong><br>
+      1. QA immediately tries to login on prod → confirms bug. Checks staging → works fine.<br>
+      2. Dev checks deployment logs → Sunday night's deploy updated the auth service.<br>
+      3. Sentry traces: a config variable <code>JWT_SECRET</code> was not set in production env.<br>
+      4. DevOps adds the missing env variable and restarts the service. (15 min fix)<br>
+      5. QA retests login, checks "Remember me", OAuth (Google login) → all working.<br>
+      6. Post-mortem: Added a pre-deploy checklist to verify all env variables exist in prod before deploying.<br>
+      7. QA adds an automated smoke test that runs on prod post-deploy: hits <code>/auth/login</code> and asserts 200 status.
+    </div>`
+  },
+  {
+    tag: "project", diff: "medium",
+    q: "How do you manage Test Environments across a project?",
+    a: `<strong>Typical environments:</strong>
+    <ul>
+      <li><strong>Dev</strong> — developer sandboxes, used for unit tests, unstable</li>
+      <li><strong>QA/Test</strong> — stable environment for QA functional testing</li>
+      <li><strong>Staging/Pre-prod</strong> — production-like, used for UAT and regression</li>
+      <li><strong>Production</strong> — live; smoke test only after deployment</li>
+    </ul>
+    <strong>Management best practices:</strong>
+    <ul>
+      <li>Infrastructure as Code (Terraform, Ansible) for consistency</li>
+      <li>Regular data refresh — keep test data current and valid</li>
+      <li>Clear access controls — prevent accidental production changes</li>
+      <li>Clear ownership per environment</li>
+      <li>Environment status page — communicate outages to the QA team</li>
+      <li>Mirror production config to avoid "works in staging" surprises</li>
+    </ul>`
+  },
+  {
+    tag: "project", diff: "hard",
+    q: "How do you measure QA effectiveness and quality metrics?",
+    a: `<strong>Process metrics:</strong>
+    <ul>
+      <li><strong>Test coverage</strong> — % of requirements with at least one test case</li>
+      <li><strong>Test execution rate</strong> — tests run vs planned in the sprint</li>
+      <li><strong>Defect detection rate</strong> — bugs found in testing vs production</li>
+    </ul>
+    <strong>Defect metrics:</strong>
+    <ul>
+      <li><strong>Defect density</strong> — defects per feature or module</li>
+      <li><strong>Defect escape rate</strong> — % of bugs that reach production</li>
+      <li><strong>Defect Removal Efficiency (DRE)</strong> = bugs in testing / total bugs × 100</li>
+    </ul>
+    <strong>Agile metrics:</strong>
+    <ul>
+      <li>Stories that passed QA per sprint</li>
+      <li>Bug reopen rate</li>
+      <li>Automation coverage % growth over time</li>
+    </ul>
+    <strong>Business metrics:</strong>
+    <ul>
+      <li>Production incidents per release</li>
+      <li>Customer-reported bugs per month</li>
+    </ul>`
+  },
+  {
+    tag: "project", diff: "medium",
+    q: "How do you handle Knowledge Transfer when onboarding or leaving a project?",
+    a: `<strong>When onboarding to a new project:</strong>
+    <ul>
+      <li>Study requirements, architecture, and existing test documentation</li>
+      <li>Review existing test cases and automation suite</li>
+      <li>Shadow existing QA for a few days before taking over</li>
+      <li>Identify coverage gaps or outdated documentation</li>
+      <li>Set up local environment and validate all tools</li>
+    </ul>
+    <strong>When handing off a project:</strong>
+    <ul>
+      <li>Document test strategy, test plan, and environment setup</li>
+      <li>Update test cases to reflect the current application state</li>
+      <li>Record walkthrough videos for complex workflows</li>
+      <li>Create a "known issues and gotchas" document</li>
+      <li>Pair with incoming QA for an overlapping period</li>
+      <li>Ensure automation README is up to date and suite runs cleanly</li>
+    </ul>`
+  },
+  {
+    tag: "project", diff: "hard",
+    q: "How do you handle last-minute scope changes just before a release?",
+    a: `<strong>Step 1 — Impact assessment:</strong>
+    <ul>
+      <li>Understand what changed and why it changed</li>
+      <li>Identify which test cases are affected or need updating</li>
+      <li>Identify new test cases required for the change</li>
+    </ul>
+    <strong>Step 2 — Communicate risk:</strong>
+    <ul>
+      <li>Inform PM and stakeholders of additional testing time needed</li>
+      <li>Document the risk of releasing without full coverage</li>
+      <li>Get explicit written sign-off if proceeding with reduced coverage</li>
+    </ul>
+    <strong>Step 3 — Prioritize testing:</strong>
+    <ul>
+      <li>Test the change itself first (critical path)</li>
+      <li>Run smoke test of all core user journeys</li>
+      <li>Defer lower-risk regression areas if time-constrained</li>
+    </ul>
+    <strong>Step 4 — Post-release plan:</strong>
+    <ul>
+      <li>Enhanced monitoring in production for first 24-48 hours</li>
+      <li>Quick hotfix process agreed in advance with the team</li>
+    </ul>`
+  }
+];
+
+// ── State ──
+let activeTag = "all";
+let searchTerm = "";
+const doneSet = new Set(JSON.parse(localStorage.getItem("qa-done") || "[]"));
+
+// ── Render ──
+function render() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  const filtered = questions.filter((q, i) => {
+    const matchTag = activeTag === "all" || q.tag === activeTag;
+    const matchSearch = q.q.toLowerCase().includes(searchTerm) || q.a.toLowerCase().includes(searchTerm);
+    return matchTag && matchSearch;
+  });
+
+  document.getElementById("visible-count").textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty">No questions match your search.</div>`;
+    return;
+  }
+
+  filtered.forEach((item, idx) => {
+    const globalIdx = questions.indexOf(item);
+    const isDone = doneSet.has(globalIdx);
+    const card = document.createElement("div");
+    card.className = "card" + (isDone ? " done" : "");
+    card.dataset.idx = globalIdx;
+
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="tag tag-${item.tag}">${item.tag}</span>
+        <span class="card-q">${item.q}</span>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="card-answer">${item.a}</div>
+      </div>
+      <div class="card-footer">
+        <span class="difficulty diff-${item.diff}">${item.diff}</span>
+        <button class="done-btn" data-idx="${globalIdx}">${isDone ? "✓ Done" : "Mark Done"}</button>
+      </div>
+    `;
+
+    card.addEventListener("click", (e) => {
+      if (e.target.classList.contains("done-btn")) return;
+      card.classList.toggle("open");
+    });
+
+    card.querySelector(".done-btn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      const i = parseInt(e.target.dataset.idx);
+      if (doneSet.has(i)) {
+        doneSet.delete(i);
+        card.classList.remove("done");
+        e.target.textContent = "Mark Done";
+      } else {
+        doneSet.add(i);
+        card.classList.add("done");
+        e.target.textContent = "✓ Done";
+      }
+      localStorage.setItem("qa-done", JSON.stringify([...doneSet]));
+      updateStats();
+    });
+
+    grid.appendChild(card);
+  });
+
+  updateStats();
+}
+
+function updateStats() {
+  const total = questions.length;
+  const done = doneSet.size;
+  document.getElementById("total-count").textContent = total;
+  document.getElementById("done-count").textContent = done;
+  document.getElementById("progress-text").textContent = `${done} / ${total} completed`;
+  document.getElementById("progress-fill").style.width = `${Math.round((done / total) * 100)}%`;
+}
+
+// ── Filters ──
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeTag = btn.dataset.tag;
+    render();
+  });
+});
+
+// ── Search ──
+document.getElementById("search").addEventListener("input", (e) => {
+  searchTerm = e.target.value.toLowerCase().trim();
+  render();
+});
+
+// ── Init ──
+render();
+</script>
+</body>
+</html>
